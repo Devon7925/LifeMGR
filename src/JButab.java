@@ -21,4 +21,4 @@ class JButab extends JButton{
         setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, Color.BLACK));
         setBackground(new Color(240, 240, 240));
     }
-}
+} 
