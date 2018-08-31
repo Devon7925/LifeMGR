@@ -13,6 +13,8 @@ public class Elem implements Serializable{
     boolean selected = false;
     List holder;
     boolean persistant = false;
+
+    int importance;
     public Elem(String name, List holder){
         this.name = new MutableString(name);
         this.holder = holder;
@@ -52,6 +54,9 @@ public class Elem implements Serializable{
             g2.setColor(Color.green);
             g2.drawLine(x, Arith.lineheight(g2)/2, (int) (2.0/3.0*Arith.lineheight(g2)+x), Arith.lineheight(g2)/2);
             g2.drawLine((int) (1.0/3.0*Arith.lineheight(g2)+x), 0, (int) (1.0/3.0*Arith.lineheight(g2)+x), Arith.lineheight(g2));
+            x += Arith.lineheight(g2);
+            g2.setColor(Color.gray);
+            g2.drawString(importance+"", x, Arith.lineheight(g2));
         }
         g2.setColor(Color.black);
         g2.translate(-loc.x-Settings.indent*indent, -loc.y);

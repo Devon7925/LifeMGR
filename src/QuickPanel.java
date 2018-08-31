@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 
 class QuickPanel extends ListPanelType implements Runnable{
@@ -14,8 +13,8 @@ class QuickPanel extends ListPanelType implements Runnable{
 	boolean h = false;
 	double anim = 1;
 	double oldprogress;
-	public QuickPanel(List list, JButton tab, JFrame frame){
-		super(list, tab, frame);
+	public QuickPanel(List list, JFrame frame){
+		super(list, frame);
 		setBackground(Color.white);
 		setFocusTraversalKeysEnabled(false);
 		addKeyListener(this);
@@ -86,7 +85,9 @@ class QuickPanel extends ListPanelType implements Runnable{
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_SPACE){
+		if(e.getKeyCode() == KeyEvent.VK_F1){
+			list.clear();
+		}else if(e.getKeyCode() == KeyEvent.VK_SPACE){
 			if(active.holder != null)oldprogress = active.holder.progress;
 			if(active != null)active.check(true);
 			list.update();

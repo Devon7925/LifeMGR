@@ -11,29 +11,15 @@ public class List extends Elem{
 
     boolean collapsed;
     boolean setsucess;
+
     public List(String name, List holder){
         super(name, holder);
         if(holder == null)top = this;
-        else top = holder.top;
+        else {
+            top = holder.top;
+            importance = holder.importance;
+        }
         items = new ArrayList<List>();
-    }
-    public void add(List e) {
-        items.add(e);
-        e.holder = this;
-    }
-    public void add(int i, List e) {
-        items.add(i, e);
-        e.holder = this;
-    }
-    public void remove(List e) {
-        items.remove(e);
-        update();
-    }
-    public void addto() {
-        List l = new List("", this);
-        l.selected = true;
-        setfocus(l);
-        add(l);
     }
     public void update() {
         if(items.size() == 0) return;
@@ -80,51 +66,6 @@ public class List extends Elem{
             items.get(--index).clickrecur(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)));
             update();
         }
-    }   
-    public void check(boolean b){
-        for(Elem e : items){
-            e.check(b);
-        }
-        super.check(b);
-        update();
-    }
-    public List hover(Graphics2D g2, int x, int y) {
-        int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
-        index = index(index);
-        if(index <= 0){
-            return this;
-        }else if(index > items.size()){
-            return null;
-        }else{
-            return items.get(--index).hover(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)));
-        }
-    }
-    public int index(int index2){
-        int index = index2-1;
-        if(index>=0){
-            for(int i = 0; i < ((index2>items.size())?items.size():index2); i++){
-                index -= items.get(i).countit();
-                if(index < 0){
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return index+1;
-    }
-    public int countit() {
-        int sum = 0;
-        if(!collapsed) for(List e : items){
-            sum += e.countit();
-        }
-        return sum+1;
-    }
-    public int countit(int index) {
-        int sum = 0;
-        for(int i = 0; i < index; i++){
-            sum += items.get(i).countit();
-        }
-        return sum+1;
     }
     public void click(Graphics2D g2, int x, int y) {
         int x1 = 0;
@@ -175,6 +116,51 @@ public class List extends Elem{
             return;
         }
     }
+    public void check(boolean b){
+        for(Elem e : items){
+            e.check(b);
+        }
+        super.check(b);
+        update();
+    }
+    public List hover(Graphics2D g2, int x, int y) {
+        int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
+        index = index(index);
+        if(index <= 0){
+            return this;
+        }else if(index > items.size()){
+            return null;
+        }else{
+            return items.get(--index).hover(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)));
+        }
+    }
+    public int index(int index2){
+        int index = index2-1;
+        if(index>=0){
+            for(int i = 0; i < ((index2>items.size())?items.size():index2); i++){
+                index -= items.get(i).countit();
+                if(index < 0){
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return index+1;
+    }
+    public int countit() {
+        int sum = 0;
+        if(!collapsed) for(List e : items){
+            sum += e.countit();
+        }
+        return sum+1;
+    }
+    public int countit(int index) {
+        int sum = 0;
+        for(int i = 0; i < index; i++){
+            sum += items.get(i).countit();
+        }
+        return sum+1;
+    }
     void setfocus(List e){
         e.selected = true;
         e.focus = null;
@@ -197,11 +183,8 @@ public class List extends Elem{
         }
     }
     void nofocus(){
-        selected = false;
         focus = null;
-        for(List l : items){
-            l.resetfocus();
-        }
+        resetfocus();
     }
     void clear(){
         ArrayList<List> toremove = new ArrayList<List>();
@@ -218,11 +201,11 @@ public class List extends Elem{
         persistant = true;
         if(holder != null)holder.setpersistant();
     }
-    int getLevel(){
-        if(holder == null){
-            return 0;
+    public int level(){
+        if(holder != null){
+            return holder.level()+1;
         }else{
-            return holder.getLevel()+1;
+            return 0;
         }
     }
     public List get(Graphics2D g2, int x, int y) {
@@ -261,6 +244,20 @@ public class List extends Elem{
             return setsucess;
         }
     }
+    public void add(List e) {
+        items.add(e);
+        e.holder = this;
+    }
+    public void add(int i, List e) {
+        items.add(i, e);
+        e.holder = this;
+    }
+    public void addto() {
+        List l = new List("", this);
+        l.selected = true;
+        setfocus(l);
+        add(l);
+    }
     public boolean addTo(List l1, List l2){
         if(this == l1){
             add(l2);
@@ -283,6 +280,10 @@ public class List extends Elem{
             return setsucess;
         }
     }
+    public void remove(List e) {
+        items.remove(e);
+        update();
+    }
     public boolean remFrom(List l1, List l2){
         if(items.contains(l1)){
             items.get(items.indexOf(l1)).remove(l2);
@@ -291,13 +292,6 @@ public class List extends Elem{
             setsucess = false;
             items.forEach(n -> {if(n.remFrom(l1, l2)) {setsucess = true;} });
             return setsucess;
-        }
-    }
-    public int level(){
-        if(holder != null){
-            return holder.level()+1;
-        }else{
-            return 0;
         }
     }
     public List getFirst() {
@@ -310,6 +304,17 @@ public class List extends Elem{
             return this;
         }else{
             return null;
+        }
+    }
+    public List prev(){
+        if(holder != null){
+            if(holder.items.indexOf(this) > 0){
+                return holder.items.get(holder.items.indexOf(this)-1);
+            }else {
+                return holder;
+            }
+        }else{
+            return getFirst();
         }
     }
     public List getNext(List l) {
@@ -326,17 +331,6 @@ public class List extends Elem{
             return null;
         }
         return null;
-    }
-    public List prev(){
-        if(holder != null){
-            if(holder.items.indexOf(this) > 0){
-                return holder.items.get(holder.items.indexOf(this)-1);
-            }else {
-                return holder;
-            }
-        }else{
-            return getFirst();
-        }
     }
     public List next(){
         if(holder != null){

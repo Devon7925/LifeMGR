@@ -9,9 +9,8 @@ abstract class ListPanelType extends JPanel implements KeyListener{
 	private static final long serialVersionUID = 1L;
 	List list;
 	JButton tab;
-	ListPanelType(List list, JButton tab, JFrame frame){
+	ListPanelType(List list, JFrame frame){
 		this.list = list;
-		this.tab = tab;
 		frame.addKeyListener(this);
 	}
 	@Override

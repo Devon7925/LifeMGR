@@ -9,7 +9,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Collections;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
 
@@ -21,14 +20,15 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	Point click, click2 = new Point(0, 0);
 	JFrame frame;
 	boolean selectdrag = false;
-	public ListPanel(List list, JButton tab, JFrame frame){
-		super(list, tab, frame);
+	public ListPanel(List list, JFrame frame){
+		super(list, frame);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
 		addMouseWheelListener(this);
 		setBackground(Color.white);
 		setFocusTraversalKeysEnabled(false);
+		this.frame = frame;
 		list.update();
 		repaint();
 	}
@@ -175,10 +175,14 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 				if(foc.holder.items.indexOf(foc)+1 < foc.holder.items.size())Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc), foc.holder.items.indexOf(foc)+1);
 			}else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
 				foc.name.setValue(foc.name.getValue().substring(0, foc.name.getValue().length()-1));
+			}else if(e.isControlDown()){
+				if((e.getKeyChar()+"").matches("\\d")){
+					foc.importance = Integer.parseInt(e.getKeyChar()+"");
+				}
 			}else if(isPrintableChar(e.getKeyChar())){
 				if(focus == foc){
 					foc.name.setValue(foc.name.getValue() + e.getKeyChar());
-					int a = (1+foc.getLevel())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+4*Arith.lineheight(g2);
+					int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+4*Arith.lineheight(g2);
 					frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
 				}else{
 					foc.name.setValue(""+e.getKeyChar());

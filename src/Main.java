@@ -15,7 +15,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -24,10 +23,8 @@ public class Main extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	public List list = new List("ToDo", null);
 	JSplitPane pane;
-	ListPanel listpanel;
 	QuickPanel quickpanel;
 	JPanel tabs;
-	static JButab l;
 
 	public Main() {
 		list = deserialzeAddress("C:/Users/Public/eclipse-workspace/LifeMGR/yay.list");
@@ -37,12 +34,10 @@ public class Main extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		tabs = new JPanel();
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
-		tabs.setLayout(new GridLayout(1, 2));
-		l = new JButab("List", this);
-		listpanel = new ListPanel(list, l, this);
-		listpanel.frame = this;
-		quickpanel = new QuickPanel(list, new JButab("Quick", this), this);		
-		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, listpanel);
+		new JButab("List", this, new ListPanel(list, this), tabs);
+		new JButab("Quick", this, new QuickPanel(list, this), tabs);
+		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		
+		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, ((JButab) tabs.getComponent(0)).panel);
 		pane.setDividerLocation(getHeight()/20);
 		pane.setDividerSize(0);
 		setContentPane(pane);
@@ -55,7 +50,7 @@ public class Main extends JFrame implements ActionListener{
             @Override
             public void windowClosing(WindowEvent e)
             {
-				serializeAddress(listpanel.list);
+				serializeAddress(list);
                 e.getWindow().dispose();
             }
         });
@@ -63,20 +58,7 @@ public class Main extends JFrame implements ActionListener{
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.setVisible(true);
-		l.doClick();
-	}
-	class JButab extends JButton{
-
-		private static final long serialVersionUID = 1L;
-
-		JButab(String name, ActionListener a){
-			super(name);
-			setActionCommand(name);
-			tabs.add(this);
-			addActionListener(a);
-			setBackground(Color.WHITE);
-			setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, Color.BLACK));
-		}
+		((ListPanelType) main.pane.getBottomComponent()).tab.doClick();
 	}
 	public static void serializeAddress(List address) {
 
@@ -113,17 +95,15 @@ public class Main extends JFrame implements ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		((ListPanelType) pane.getBottomComponent()).tab.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, Color.BLACK));
-		((ListPanelType) pane.getBottomComponent()).tab.setBackground(new Color(240, 240, 240));
-		if (e.getActionCommand().equals("List")) {
-			pane.setBottomComponent(listpanel);
-		}else if(e.getActionCommand().equals("Quick")){
-			pane.setBottomComponent(quickpanel);
-		}
-		((ListPanelType) pane.getBottomComponent()).tab.setBackground(Color.WHITE);
-		((ListPanelType) pane.getBottomComponent()).grabFocus();
-		((ListPanelType) pane.getBottomComponent()).tab.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.BLACK));
-		((ListPanelType) pane.getBottomComponent()).update();
+		ListPanelType bottom = ((ListPanelType) pane.getBottomComponent());
+		bottom.tab.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, Color.BLACK));
+		bottom.tab.setBackground(new Color(240, 240, 240));
+		bottom = ((JButab) e.getSource()).panel;
+		pane.setBottomComponent(bottom);
+		bottom.tab.setBackground(Color.WHITE);
+		bottom.grabFocus();
+		bottom.tab.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.BLACK));
+		bottom.update();
 	}
 	public List deserialzeAddress(String filename) {
 
