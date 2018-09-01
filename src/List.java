@@ -33,6 +33,7 @@ public class List extends Elem{
         progress = list.progress;
         importance = list.importance;
         collapsed = list.collapsed;
+        persistant = list.persistant;
     }
     public void update() {
         if(items.size() == 0) return;
