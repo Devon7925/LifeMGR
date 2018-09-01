@@ -93,7 +93,7 @@ class QuickPanel extends ListPanelType implements Runnable{
 			list.update();
 			new Thread(this).start();
 			oldactive = active;
-			active = list.getFirst();
+			active = list.prioitysort().getFirst();
 			repaint();
 		}else if(e.getKeyCode() == KeyEvent.VK_S){
 			if(active.holder != null)oldprogress = active.holder.progress;
@@ -101,7 +101,7 @@ class QuickPanel extends ListPanelType implements Runnable{
 			new Thread(this).start();
 			oldactive = active;
 			do{
-				if(active != null) active = list.getNext(active);
+				if(active != null) active = list.prioitysort().getNext(active);
 				else active = list;
 			}while(active.getFirst() == null);
 			if(active != null) active = active.getFirst();
@@ -124,6 +124,6 @@ class QuickPanel extends ListPanelType implements Runnable{
 	@Override
 	void update() {
 		super.update();
-		oldactive = active = list.getFirst();
+		oldactive = active = list.prioitysort().getFirst();
 	}
 }

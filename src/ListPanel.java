@@ -148,12 +148,12 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 			}else if(e.getKeyCode() == KeyEvent.VK_ENTER){
 				if(e.isControlDown()){
 					List l = new List("", foc);
-					foc.add(l);
+					foc.add(0, l);
 					l.selected = true;
 					foc.setfocus(l);
 				}else if(foc.holder != null){
 					List l = new List("", foc.holder);
-					foc.holder.add(l);
+					foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
 					l.selected = true;
 					foc.holder.setfocus(l);
 				}
@@ -177,7 +177,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 				foc.name.setValue(foc.name.getValue().substring(0, foc.name.getValue().length()-1));
 			}else if(e.isControlDown()){
 				if((e.getKeyChar()+"").matches("\\d")){
-					foc.importance = Integer.parseInt(e.getKeyChar()+"");
+					foc.setpriority(Integer.parseInt(e.getKeyChar()+""));
 				}
 			}else if(isPrintableChar(e.getKeyChar())){
 				if(focus == foc){

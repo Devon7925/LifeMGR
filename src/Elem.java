@@ -15,6 +15,7 @@ public class Elem implements Serializable{
     boolean persistant = false;
 
     int importance;
+    
     public Elem(String name, List holder){
         this.name = new MutableString(name);
         this.holder = holder;

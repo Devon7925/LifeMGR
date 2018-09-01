@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class List extends Elem{
     private static final long serialVersionUID = 2L;
@@ -20,6 +22,17 @@ public class List extends Elem{
             importance = holder.importance;
         }
         items = new ArrayList<List>();
+    }
+    public List(List list){
+        this(list.name.getValue(), list.holder!=null?list.holder:null);
+        items = new ArrayList<>(list.items.size());
+        for(List l : list.items)
+            items.add(new List(l));
+        if(list.focus != null) focus = new List(list.focus);
+        top = this;
+        progress = list.progress;
+        importance = list.importance;
+        collapsed = list.collapsed;
     }
     public void update() {
         if(items.size() == 0) return;
@@ -244,6 +257,10 @@ public class List extends Elem{
             return setsucess;
         }
     }
+    public void addAll(ArrayList<List> e) {
+        items.addAll(e);
+        items.forEach(n->n.holder = this);
+    }
     public void add(List e) {
         items.add(e);
         e.holder = this;
@@ -355,5 +372,21 @@ public class List extends Elem{
         }else{
             return getFirst();
         }
+    }
+    public List prioitysort(){
+        List orig = new List(this);
+        List l = new List("Sorted", null);
+        for(int i = 0; i <= 9; i++){
+            l.addAll(orig.find(i));
+        }
+        return l;
+    }
+    public void setpriority(int prioty){
+        importance = prioty;
+        items.forEach(n->n.setpriority(prioty));
+    }
+    public ArrayList<List> find(int prioty){
+        List list = new List(this);
+        return (ArrayList<List>) Stream.concat(list.items.stream().filter(n -> n.importance == prioty).map(n->{n.items = (ArrayList<List>) n.items.stream().filter(e -> e.importance == prioty).collect(Collectors.toList()); return n;}), items.stream().filter(e -> e.importance != prioty).flatMap(n->n.find(prioty).stream())).collect(Collectors.toList());
     }
 }

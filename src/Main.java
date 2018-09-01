@@ -36,6 +36,7 @@ public class Main extends JFrame implements ActionListener{
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
 		new JButab("List", this, new ListPanel(list, this), tabs);
 		new JButab("Quick", this, new QuickPanel(list, this), tabs);
+		new JButab("Sorted", this, new PriorityPanel(list, this), tabs);
 		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		
 		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, ((JButab) tabs.getComponent(0)).panel);
 		pane.setDividerLocation(getHeight()/20);
