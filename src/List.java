@@ -73,7 +73,7 @@ public class List extends Elem{
                 top.nofocus();
             }
         }else if(index == 0){
-            click(g2, x, y);
+            click(g2, x);
         }else if(index > items.size()){
             return;
         }else{
@@ -81,7 +81,7 @@ public class List extends Elem{
             update();
         }
     }
-    public void click(Graphics2D g2, int x, int y) {
+    public void click(Graphics2D g2, int x) {
         int x1 = 0;
         if(x < x1){
             if(top == null){
@@ -94,8 +94,6 @@ public class List extends Elem{
         x1 += Arith.lineheight(g2)+Settings.linespace;
         if(x < x1) {
             check(progress < 1);
-            // focus = null;
-            // selected = true;
             holder.setfocus(this);
             return;
         }
@@ -235,6 +233,16 @@ public class List extends Elem{
             return items.get(--index).get(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)));
         }
     }
+    public List get(List l1){
+        if(l1.name.getValue().equals(name.getValue())){
+            return this;
+        }else {
+            for (List l : items) {
+                if(l.get(l1) != null) return l.get(l1);
+            }
+            return null;
+        }
+    }
     public void set(Graphics2D g2, int x, int y, List l) {
         int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
         index = index(index);
@@ -336,7 +344,7 @@ public class List extends Elem{
         }
     }
     public List getNext(List l) {
-        if(this == l){
+        if(this.name.getValue().equals(l.name.getValue())){
             if(items.size() > 0){
                 return items.get(0);
             }else{
@@ -352,8 +360,8 @@ public class List extends Elem{
     }
     public List next(){
         if(holder != null){
-            if(holder.items.indexOf(this) < holder.items.size()-1){
-                return holder.items.get(holder.items.indexOf(this)+1);
+            if(holder.items.indexOf(holder.get(this)) < holder.items.size()-1){
+                return holder.items.get(holder.items.indexOf(holder.get(this))+1);
             }else {
                 return holder.next();
             }

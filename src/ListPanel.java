@@ -54,7 +54,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(Math.abs(click.x-e.getX())<5 && Math.abs(click.y-e.getY())<5){
-			list.clickrecur(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll);
+			List l = list.get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll);
+			l.click(g2, e.getX()-Settings.indent*l.level());
 			list.getfocus();
 		}else if(!selectdrag){
 			scroll -= click2.y-e.getY();
@@ -143,7 +144,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 		}else if(foc != null){
 			if(e.getKeyCode() == KeyEvent.VK_TAB){
 				if(e.isControlDown()) foc.holder.setfocus(foc.prev());
-				else foc.holder.setfocus(foc.propnext());
+				else if(foc.holder != null)foc.holder.setfocus(foc.propnext());
+				else foc.setfocus(foc.propnext());
 				foc.selected = false;
 			}else if(e.getKeyCode() == KeyEvent.VK_ENTER){
 				if(e.isControlDown()){
