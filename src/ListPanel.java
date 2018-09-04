@@ -159,7 +159,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 					l.selected = true;
 					foc.holder.setfocus(l);
 				}
-				scroll -= Arith.lineheight(g2)+Settings.linespace;
+				scroll -= Arith.lineheight(g2)+Settings.line;
 			}else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
 				int i = foc.holder.items.indexOf(foc)-1;
 				if(i < foc.holder.items.size() && i >= 0){
@@ -184,7 +184,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 			}else if(isPrintableChar(e.getKeyChar())){
 				if(focus == foc){
 					foc.name.setValue(foc.name.getValue() + e.getKeyChar());
-					int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+4*Arith.lineheight(g2);
+					int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
 					frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
 				}else{
 					foc.name.setValue(""+e.getKeyChar());
