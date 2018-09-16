@@ -95,7 +95,7 @@ public class List extends Elem{
             }
             return;
         }
-        x1 += Arith.lineheight(g2)+Settings.linespace;
+        x1 += Arith.lineheight(g2)+2*Settings.linespace;
         if(x < x1) {
             check(progress < 1);
             holder.setfocus(this);

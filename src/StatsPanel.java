@@ -23,6 +23,7 @@ class StatsPanel extends ListPanelType {
         Graphics2D g2 = (Graphics2D) g;
         for(int i = 0; i <= 9; i++){
             g2.setColor(Color.BLUE);
+            if(list.find(i).size() == 0) g2.setColor(Color.MAGENTA);
             g2.fillOval(i%3*getWidth()/3, i/3*getHeight()/3, getWidth()/3, getHeight()/3);
             g2.setColor(Color.GREEN);
             g2.fillArc(i%3*getWidth()/3, i/3*getHeight()/3, getWidth()/3, getHeight()/3, 90, (int) (-360*list.find(i).stream().collect(Collectors.averagingDouble(n->n.progress))));
