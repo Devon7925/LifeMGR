@@ -49,7 +49,7 @@ public class List extends Elem{
     public int draw(Graphics2D g2, int indent, Point loc, List hovered) {
         super.draw(g2, indent, loc, hovered);
         int i = 1;
-        if(holder != null && ((collapsed && next().importance != importance)||(!collapsed && holder.getNext(this).importance != importance))){
+        if(holder != null && ((collapsed && next().importance != importance)||(!collapsed && holder.getNext(this).importance != importance)) && holder.getNext(this) != top){
             g2.setColor(new Color(225, 150, 225));
             g2.drawLine((int) loc.getX()+indent*Settings.indent, (int) loc.getY()+(Arith.lineheight(g2)+Settings.line/2), (int) loc.getX()+200+indent*Settings.indent, (int) loc.getY()+(Arith.lineheight(g2)+Settings.line/2));
         }
