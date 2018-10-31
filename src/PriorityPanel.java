@@ -10,7 +10,7 @@ class PriorityPanel extends ListPanel implements MouseInputListener, MouseWheelL
 	public PriorityPanel(List list, JFrame frame){
 		super(list, frame);
 		this.orig = list;
-		list.update();
+		update();
 		repaint();
 	}
 	@Override
@@ -32,5 +32,6 @@ class PriorityPanel extends ListPanel implements MouseInputListener, MouseWheelL
 	void update() {
 		super.update();
 		list = new List(orig).prioitysort();
+		list.update();
 	}
 }

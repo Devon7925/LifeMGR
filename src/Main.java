@@ -21,10 +21,10 @@ import javax.swing.JSplitPane;
 
 public class Main extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
-	public List list = new List("ToDo", null);
+	public List list;
 	JSplitPane pane;
 	QuickPanel quickpanel;
-	JPanel tabs;
+	static JPanel tabs;
 
 	public Main() {
 		list = deserialzeAddress("C:/Users/Public/eclipse-workspace/LifeMGR/yay.list");
@@ -34,10 +34,10 @@ public class Main extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		tabs = new JPanel();
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
-		new JButab("List", this, new ListPanel(list, this), tabs);
-		new JButab("Quick", this, new QuickPanel(list, this), tabs);
+		new JButab("List"  , this, new ListPanel    (list, this), tabs);
+		new JButab("Quick" , this, new QuickPanel   (list, this), tabs);
 		new JButab("Sorted", this, new PriorityPanel(list, this), tabs);
-		new JButab("Stats", this, new StatsPanel(list, this), tabs);
+		new JButab("Stats" , this, new StatsPanel   (list, this), tabs);
 		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		
 		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, ((JButab) tabs.getComponent(0)).panel);
 		pane.setDividerLocation(getHeight()/20);
@@ -60,7 +60,8 @@ public class Main extends JFrame implements ActionListener{
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.setVisible(true);
-		((ListPanelType) main.pane.getBottomComponent()).tab.doClick();
+		((JButab) tabs.getComponent(1)).doClick();
+		((JButab) tabs.getComponent(0)).doClick();
 	}
 	public static void serializeAddress(List address) {
 
