@@ -26,7 +26,7 @@ class StatsPanel extends ListPanelType {
             if(list.find(i).size() == 0) g2.setColor(Color.MAGENTA);
             g2.fillOval(i%3*getWidth()/3, i/3*getHeight()/3, getWidth()/3, getHeight()/3);
             g2.setColor(Color.GREEN);
-            g2.fillArc(i%3*getWidth()/3, i/3*getHeight()/3, getWidth()/3, getHeight()/3, 90, (int) (-360*list.find(i).stream().collect(Collectors.averagingDouble(n->n.progress))));
+            g2.fillArc(i%3*getWidth()/3, i/3*getHeight()/3, getWidth()/3, getHeight()/3, 90, (int) (-360*list.find(i).stream().collect(Collectors.averagingDouble(n->{n.update(); return n.progress;}))));
             Font f = g2.getFont();
             g2.setFont(new Font("Ubuntu", Font.PLAIN, 150));
             g2.setColor(Color.BLACK);
