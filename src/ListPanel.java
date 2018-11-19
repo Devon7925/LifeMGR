@@ -14,13 +14,14 @@ import javax.swing.event.MouseInputListener;
 
 class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
-	List focus;
 	Graphics2D g2 = (Graphics2D) getGraphics();
 	double scroll = 0;
 	Point click, click2 = new Point(0, 0);
 	JFrame frame;
 	boolean selectdrag = false;
-	public ListPanel(List list, JFrame frame){
+	String path;
+
+	public ListPanel(List list, JFrame frame, String path){
 		super(list, frame);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -29,6 +30,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 		setBackground(Color.white);
 		setFocusTraversalKeysEnabled(false);
 		this.frame = frame;
+		this.path = path;
 		list.update();
 		repaint();
 	}
@@ -49,19 +51,16 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	@Override
 	public void mousePressed(MouseEvent e) {
 		click2 = click = e.getPoint();
-		selectdrag = list.get(g2, (int) click.getX(), (int) click.getY()) == list.getfocus();
+		selectdrag = list.get(g2, (int) click.getX(), (int) click.getY()-(int) scroll).equals(list.getfocus());
 	}
-	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(Math.abs(click.x-e.getX())<5 && Math.abs(click.y-e.getY())<5){
-			List l = list.get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll);
-			l.click(g2, e.getX()-Settings.indent*l.level());
-			list.getfocus();
+			list.get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll).click(g2, e.getX());
 		}else if(!selectdrag){
 			scroll -= click2.y-e.getY();
 		}
 		list.update();
-		if(scroll<-Settings.line+getHeight()+(list.count()-list.countit()-1)*(1.0*Settings.line+Arith.lineheight(g2))) scroll = -Settings.line+getHeight()+(list.count()-list.countit()-1)*(1.0*Settings.line+Arith.lineheight(g2));
+		if(scroll<-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2))) scroll = -Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2));
 		repaint();
 	}
 	@Override
@@ -74,7 +73,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	public void mouseDragged(MouseEvent e) {
 		if(selectdrag){
 			List temp = list.getfocus();
-			List temp2 = list.get(g2, (int) e.getX(), (int) e.getY());
+			List temp2 = list.get(g2, (int) e.getX(), (int) e.getY()-(int) scroll);
 			if(temp == temp2 && e.getX()-click.getX() > Settings.indent){
 				int i = temp.holder.items.indexOf(temp);
 				if(i > 0){
@@ -118,9 +117,10 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 		click2 = e.getPoint();
 		repaint();
 	}
+	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(list.count()-list.countit()-1)*(1.0*Settings.line+Arith.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();
+		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();
 		repaint();
 	}
 	//endregion
@@ -130,7 +130,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		List foc = list.getfocus();
+		ListInstance foc = list.getfocus();
 		if(e.getKeyCode() == KeyEvent.VK_F1){
 			list.clear();
 		}else if(e.getKeyCode() == KeyEvent.VK_F2){
@@ -140,24 +140,21 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 				foc.persistant = false;
 			}
 		}else if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
-			list.nofocus();
+			list.resetfocus();
 		}else if(foc != null){
 			if(e.getKeyCode() == KeyEvent.VK_TAB){
-				if(e.isControlDown()) foc.holder.setfocus(foc.prev());
-				else if(foc.holder != null)foc.holder.setfocus(foc.propnext());
-				else foc.setfocus(foc.propnext());
-				foc.selected = false;
+				if(e.isControlDown()) ((ListInstance) foc.holder).setfocus((ListInstance) foc.prev());
+				else if(foc.holder != null)((ListInstance) foc.holder).setfocus((ListInstance) foc.propnext());
+				else foc.setfocus((ListInstance) foc.propnext());
 			}else if(e.getKeyCode() == KeyEvent.VK_ENTER){
 				if(e.isControlDown()){
-					List l = new List("", foc);
+					ListInstance l = new ListInstance("", foc);
+					list.setfocus(l);
 					foc.add(0, l);
-					l.selected = true;
-					foc.setfocus(l);
 				}else if(foc.holder != null){
-					List l = new List("", foc.holder);
+					ListInstance l = new ListInstance("", foc.holder);
+					list.setfocus(l);
 					foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
-					l.selected = true;
-					foc.holder.setfocus(l);
 				}
 				scroll -= Arith.lineheight(g2)+Settings.line;
 			}else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
@@ -182,18 +179,13 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 					foc.setpriority(Integer.parseInt(e.getKeyChar()+""));
 				}
 			}else if(isPrintableChar(e.getKeyChar())){
-				if(focus == foc){
-					foc.name.setValue(foc.name.getValue() + e.getKeyChar());
-					int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
-					frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
-				}else{
-					foc.name.setValue(""+e.getKeyChar());
-				}
+				foc.name.setValue(foc.name.getValue() + e.getKeyChar());
+				int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
+				frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
 			}
 		}
 		list.update();
-		focus = foc;
-		Main.serializeAddress(list);
+		Main.serializeAddress(new List(list), path);
 		repaint();
 	}
 	@Override

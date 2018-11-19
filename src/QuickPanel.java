@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 class QuickPanel extends ListPanelType implements Runnable{
 	private static final long serialVersionUID = 1L;
 	List active, oldactive;
-	List orig;
 	boolean h = false;
 	double anim = 1;
 	double oldprogress;
@@ -19,7 +18,6 @@ class QuickPanel extends ListPanelType implements Runnable{
 		setBackground(Color.white);
 		setFocusTraversalKeysEnabled(false);
 		addKeyListener(this);
-		this.orig = list;
 		update();
 		repaint();
 	}
@@ -89,24 +87,26 @@ class QuickPanel extends ListPanelType implements Runnable{
 		if(e.getKeyCode() == KeyEvent.VK_F1){
 			list.clear();
 		}else if(e.getKeyCode() == KeyEvent.VK_SPACE){
-			if(active.holder != null)oldprogress = active.holder.progress;
-			if(active != null) active.check(true);
+			if(active != null) {
+				if(active.holder != null)oldprogress = active.holder.progress;
+				active.check(true);
+			}
 			list.update();
 			new Thread(this).start();
 			oldactive = active;
-			active = orig.get(list.getFirst());
+			active = list.getFirst();
 		}else if(e.getKeyCode() == KeyEvent.VK_S){
 			if(active.holder != null)oldprogress = active.holder.progress;
 			list.update();
 			new Thread(this).start();
 			oldactive = active;
 			do{
-				if(active != null) active = orig.get(
+				if(active != null) active = 
 					list.getNext(
-						list.get(active)));
+						list.get(active));
 				else active = list;
 			}while(active.getFirst() == null);
-			if(active != null) active = orig.get(active.getFirst());
+			if(active != null) active = active.getFirst();
 		}
 		repaint();
 	}
@@ -126,7 +126,7 @@ class QuickPanel extends ListPanelType implements Runnable{
 	@Override
 	void update() {
 		super.update();
-		list = new List(orig).prioitysort();
-		oldactive = active = orig.get(list.getFirst());
+		list = new ListInstance(orig).prioitysort();
+		oldactive = active = list.getFirst();
 	}
 }

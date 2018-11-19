@@ -7,10 +7,12 @@ import javax.swing.JPanel;
 
 abstract class ListPanelType extends JPanel implements KeyListener{
 	private static final long serialVersionUID = 1L;
-	List list;
+	ListInstance list;
+	List orig;
 	JButton tab;
 	ListPanelType(List list, JFrame frame){
-		this.list = list;
+		orig = list;
+		update(list);
 		frame.addKeyListener(this);
 	}
 	@Override
@@ -22,6 +24,9 @@ abstract class ListPanelType extends JPanel implements KeyListener{
 
 	void update(){
 		list.update();
-		repaint();
+	}
+	void update(List l){
+		list = new ListInstance(l);
+		update();
 	}
 }
