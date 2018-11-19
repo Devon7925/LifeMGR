@@ -25,7 +25,7 @@ public class Main extends JFrame implements ActionListener{
 	JSplitPane pane;
 	QuickPanel quickpanel;
 	static JPanel tabs;
-	String path = "C:/Users/Public/eclipse-workspace/LifeMGR/testyay.list";
+	String path = "C:/Users/Public/eclipse-workspace/LifeMGR/yay.list";
 
 	public Main() {
 		list = new List("ToDo", null);
@@ -54,7 +54,7 @@ public class Main extends JFrame implements ActionListener{
             @Override
             public void windowClosing(WindowEvent e)
             {
-				serializeAddress(new List(((ListPanelType) pane.getBottomComponent()).list), path);
+				serializeAddress(new List(((ListPanelType) pane.getBottomComponent()).list.merge(list)), path);
                 e.getWindow().dispose();
             }
         });
