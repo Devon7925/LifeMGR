@@ -13,6 +13,7 @@ class ListInstance extends List{
     boolean selected = false;
     boolean collapsed;
     boolean ordered = true;
+    int cursor = 0;
 
     public  ListInstance(List list) {
         super(list);
@@ -74,7 +75,10 @@ class ListInstance extends List{
             attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
             g2.setFont(font.deriveFont(attributes)); 
         }
-        if(selected)g2.setColor(Color.magenta);
+        if(selected){
+            g2.setColor(Color.magenta);
+            g2.drawLine(x+Arith.linewidth(g2, new MutableString(name.getValue().substring(0, cursor))), 0, x+Arith.linewidth(g2, new MutableString(name.getValue().substring(0, cursor))), Arith.lineheight(g2));
+        }
         g2.drawString(name.getValue(), x, Arith.lineheight(g2));
         g2.setFont(font);
         if(this == hovered){
@@ -157,6 +161,7 @@ class ListInstance extends List{
     void setfocus(ListInstance focus){
         resetfocus();
         focus.selected = true;
+        focus.cursor = focus.name.getValue().length();
     }
     ListInstance getfocus(){
         if(selected) {

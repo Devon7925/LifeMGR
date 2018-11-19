@@ -2,11 +2,16 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.IOException;
 import java.util.Collections;
 
 import javax.swing.JFrame;
@@ -131,22 +136,61 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	@Override
 	public void keyPressed(KeyEvent e) {
 		ListInstance foc = list.getfocus();
-		if(e.getKeyCode() == KeyEvent.VK_F1){
+		int key = e.getKeyCode();
+		if(key == KeyEvent.VK_F1){
 			list.clear();
-		}else if(e.getKeyCode() == KeyEvent.VK_F2){
+		}else if(key == KeyEvent.VK_F2){
 			if(!foc.persistant){
 				foc.setpersistant();
 			}else{
 				foc.persistant = false;
 			}
-		}else if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+		}else if(key == KeyEvent.VK_ESCAPE){
 			list.resetfocus();
 		}else if(foc != null){
-			if(e.getKeyCode() == KeyEvent.VK_TAB){
-				if(e.isControlDown()) ((ListInstance) foc.holder).setfocus((ListInstance) foc.prev());
-				else if(foc.holder != null)((ListInstance) foc.holder).setfocus((ListInstance) foc.propnext());
-				else foc.setfocus((ListInstance) foc.propnext());
-			}else if(e.getKeyCode() == KeyEvent.VK_ENTER){
+			if(e.isControlDown()){
+				if(key == KeyEvent.VK_RIGHT){
+					int i = foc.holder.items.indexOf(foc)-1;
+					if(i < foc.holder.items.size() && i >= 0){
+						foc.holder.remove(foc);
+						foc.holder.items.get(i).add(foc);
+					}
+				}else if(key == KeyEvent.VK_LEFT){
+					if(foc.holder.holder != null){
+						foc.holder.remove(foc);
+						foc.holder.holder.add(foc.holder.holder.items.indexOf(foc.holder)+1, foc);
+					}
+				}else if(key == KeyEvent.VK_UP){
+					if(foc.holder.items.indexOf(foc)-1 >= 0)Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc), foc.holder.items.indexOf(foc)-1);
+				} else if (key == KeyEvent.VK_DOWN) {
+					if (foc.holder.items.indexOf(foc) + 1 < foc.holder.items.size())
+						Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc),
+								foc.holder.items.indexOf(foc) + 1);
+				} else if (key == KeyEvent.VK_V) {
+					try {
+						String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
+							.getData(DataFlavor.stringFlavor);
+						if(foc.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+data);
+						else foc.name.setValue(foc.name.getValue().substring(0, foc.cursor)+data+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
+						int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
+						frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
+						foc.cursor+=data.length();
+					} catch (HeadlessException | UnsupportedFlavorException | IOException e1) {
+						e1.printStackTrace();
+					} 
+				}else if((e.getKeyChar()+"").matches("\\d")){
+					foc.setpriority(Integer.parseInt(e.getKeyChar()+""));
+				}
+			}else if(key == KeyEvent.VK_UP){
+				((ListInstance) foc.holder).setfocus((ListInstance) foc.prev());
+			}else if(key == KeyEvent.VK_DOWN){
+				if(foc.holder == null) foc.setfocus((ListInstance) foc.propnext());
+				else ((ListInstance) foc.holder).setfocus((ListInstance) foc.propnext());
+			}else if(key == KeyEvent.VK_RIGHT && foc.cursor < foc.name.getValue().length()){
+				foc.cursor++;
+			}else if(key == KeyEvent.VK_LEFT && foc.cursor > 0){
+				foc.cursor--;
+			}else if(key == KeyEvent.VK_ENTER){
 				if(e.isControlDown()){
 					ListInstance l = new ListInstance("", foc);
 					list.setfocus(l);
@@ -157,31 +201,15 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 					foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
 				}
 				scroll -= Arith.lineheight(g2)+Settings.line;
-			}else if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-				int i = foc.holder.items.indexOf(foc)-1;
-				if(i < foc.holder.items.size() && i >= 0){
-					foc.holder.remove(foc);
-					foc.holder.items.get(i).add(foc);
-				}
-			}else if(e.getKeyCode() == KeyEvent.VK_LEFT){
-				if(foc.holder.holder != null){
-					foc.holder.remove(foc);
-					foc.holder.holder.add(foc.holder.holder.items.indexOf(foc.holder)+1, foc);
-				}
-			}else if(e.getKeyCode() == KeyEvent.VK_UP){
-				if(foc.holder.items.indexOf(foc)-1 >= 0)Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc), foc.holder.items.indexOf(foc)-1);
-			}else if(e.getKeyCode() == KeyEvent.VK_DOWN){
-				if(foc.holder.items.indexOf(foc)+1 < foc.holder.items.size())Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc), foc.holder.items.indexOf(foc)+1);
-			}else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
-				foc.name.setValue(foc.name.getValue().substring(0, foc.name.getValue().length()-1));
-			}else if(e.isControlDown()){
-				if((e.getKeyChar()+"").matches("\\d")){
-					foc.setpriority(Integer.parseInt(e.getKeyChar()+""));
-				}
+			}else if(key == KeyEvent.VK_BACK_SPACE && foc.cursor != 0){
+				foc.name.setValue(foc.name.getValue().substring(0, foc.cursor-1)+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
+				foc.cursor--;
 			}else if(isPrintableChar(e.getKeyChar())){
-				foc.name.setValue(foc.name.getValue() + e.getKeyChar());
+				if(foc.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+e.getKeyChar());
+				else foc.name.setValue(foc.name.getValue().substring(0, foc.cursor)+e.getKeyChar()+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
 				int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
 				frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
+				foc.cursor++;
 			}
 		}
 		list.update();
