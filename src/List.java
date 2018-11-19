@@ -1,4 +1,3 @@
-import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -11,18 +10,19 @@ public class List implements Serializable{
 	ArrayList<List> items;
     List holder;
     
-    boolean collapsed;
     boolean setsucess;
     double progress;
     int importance;
     
     boolean persistant = false;
+    int id = -1;
 
 
     public List(String name, List holder){
         this.name = new MutableString(name);
         this.holder = holder;
         progress = 0;
+        id = ID.getId();
         if(holder != null)
             importance = holder.importance;
         items = new ArrayList<List>();
@@ -34,10 +34,11 @@ public class List implements Serializable{
             items.add(new List(l));
         progress = list.progress;
         importance = list.importance;
-        collapsed = list.collapsed;
         persistant = list.persistant;
+        id = list.id;
     }
     public void update() {
+        if(id == -1) id = ID.getId();
         if(items.size() == 0) return;
         progress = 0;
         for(List e : items){
@@ -54,33 +55,6 @@ public class List implements Serializable{
         }
         progress = b?1:0;
         update();
-    }
-    public int index(int index2){
-        int index = index2-1;
-        if(index>=0){
-            for(int i = 0; i < ((index2>items.size())?items.size():index2); i++){
-                index -= get(i).countit();
-                if(index < 0){
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return index+1;
-    }
-    public int countit() {
-        int sum = 0;
-        if(!collapsed) for(List e : items){
-            sum += e.countit();
-        }
-        return sum+1;
-    }
-    public int countit(int index) {
-        int sum = 0;
-        for(int i = 0; i < index; i++){
-            sum += get(i).countit();
-        }
-        return sum+1;
     }
     void clear(){
         ArrayList<List> toremove = new ArrayList<List>();
@@ -117,18 +91,12 @@ public class List implements Serializable{
     public List get(int index){
         return items.get(index);
     }
-    public void set(Graphics2D g2, int x, int y, List l) {
-        int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
-        index = index(index);
-        if(index < 0){
-            return;
-        }else if(index == 0){
-            if(holder.items.indexOf(this) != -1) holder.items.set(holder.items.indexOf(this), l);
-        }else if(index > items.size()){
-            return;
-        }else{
-            get(--index).set(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)), l);
+    public List getFromID(int id){
+        if(this.id == id) return this;
+        for (List l : items) {
+            if(l.getFromID(id) != null) return l.getFromID(id);
         }
+        return null;
     }
     public boolean set(List l1, List l2){
         if(items.contains(l1)){

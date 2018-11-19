@@ -54,7 +54,7 @@ public class Main extends JFrame implements ActionListener{
             @Override
             public void windowClosing(WindowEvent e)
             {
-				serializeAddress(list, path);
+				serializeAddress(new List(((ListPanelType) pane.getBottomComponent()).list), path);
                 e.getWindow().dispose();
             }
         });
@@ -96,7 +96,7 @@ public class Main extends JFrame implements ActionListener{
 		ListPanelType bottom = ((ListPanelType) pane.getBottomComponent());
 		bottom.tab.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 0, Color.BLACK));
 		bottom.tab.setBackground(new Color(240, 240, 240));
-		list = new List(bottom.list);
+		list = new List(bottom.list.merge(list));
 		bottom = ((JButab) e.getSource()).panel;
 		pane.setBottomComponent(bottom);
 		bottom.tab.setBackground(Color.WHITE);
