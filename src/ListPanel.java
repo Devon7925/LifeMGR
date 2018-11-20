@@ -178,6 +178,10 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 					} catch (HeadlessException | UnsupportedFlavorException | IOException e1) {
 						e1.printStackTrace();
 					} 
+				}else if(key == KeyEvent.VK_ENTER){
+						ListInstance l = new ListInstance("", foc);
+						list.setfocus(l);
+						foc.add(0, l);
 				}else if((e.getKeyChar()+"").matches("\\d")){
 					foc.setpriority(Integer.parseInt(e.getKeyChar()+""));
 				}
@@ -190,16 +194,10 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 				foc.cursor++;
 			}else if(key == KeyEvent.VK_LEFT && foc.cursor > 0){
 				foc.cursor--;
-			}else if(key == KeyEvent.VK_ENTER){
-				if(e.isControlDown()){
-					ListInstance l = new ListInstance("", foc);
-					list.setfocus(l);
-					foc.add(0, l);
-				}else if(foc.holder != null){
-					ListInstance l = new ListInstance("", foc.holder);
-					list.setfocus(l);
-					foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
-				}
+			}else if(key == KeyEvent.VK_ENTER && foc.holder != null){
+				ListInstance l = new ListInstance("", foc.holder);
+				list.setfocus(l);
+				foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
 				scroll -= Arith.lineheight(g2)+Settings.line;
 			}else if(key == KeyEvent.VK_BACK_SPACE && foc.cursor != 0){
 				foc.name.setValue(foc.name.getValue().substring(0, foc.cursor-1)+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
