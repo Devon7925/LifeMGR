@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -14,6 +15,9 @@ abstract class ListPanelType extends JPanel implements KeyListener{
 		orig = list;
 		update(list);
 		frame.addKeyListener(this);
+		setBackground(Color.WHITE);
+        setFocusTraversalKeysEnabled(false);
+		addKeyListener(this);
 	}
 	@Override
 	public abstract void keyTyped(KeyEvent e);

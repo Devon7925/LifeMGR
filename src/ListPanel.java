@@ -1,5 +1,4 @@
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
@@ -30,14 +29,9 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 		super(list, frame);
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		addKeyListener(this);
 		addMouseWheelListener(this);
-		setBackground(Color.white);
-		setFocusTraversalKeysEnabled(false);
 		this.frame = frame;
 		this.path = path;
-		list.update();
-		repaint();
 	}
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -122,7 +116,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 		click2 = e.getPoint();
 		repaint();
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();

@@ -7,7 +7,6 @@ class PriorityPanel extends ListPanel implements MouseInputListener, MouseWheelL
 	private static final long serialVersionUID = 1L;
 	public PriorityPanel(List list, JFrame frame, String path){
 		super(list, frame, path);
-		update();
 	}
 	@Override
 	void update() {

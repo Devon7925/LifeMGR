@@ -13,8 +13,6 @@ class StatsPanel extends ListPanelType {
 
     StatsPanel(List list, JFrame frame){
 		super(list, frame);
-		setBackground(Color.white);
-        setFocusTraversalKeysEnabled(false);
     }
 
     @Override

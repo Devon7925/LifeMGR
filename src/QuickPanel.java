@@ -15,11 +15,6 @@ class QuickPanel extends ListPanelType implements Runnable{
 	double oldprogress;
 	public QuickPanel(List list, JFrame frame){
 		super(list, frame);
-		setBackground(Color.white);
-		setFocusTraversalKeysEnabled(false);
-		addKeyListener(this);
-		update();
-		repaint();
 	}
 	@Override
 	protected void paintComponent(Graphics g) {
