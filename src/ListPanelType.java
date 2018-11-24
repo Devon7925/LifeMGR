@@ -16,7 +16,7 @@ abstract class ListPanelType extends JPanel implements KeyListener{
 		update(list);
 		frame.addKeyListener(this);
 		setBackground(Color.WHITE);
-        setFocusTraversalKeysEnabled(false);
+		setFocusTraversalKeysEnabled(false);
 		addKeyListener(this);
 	}
 	@Override

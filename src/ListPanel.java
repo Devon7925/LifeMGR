@@ -176,8 +176,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 						ListInstance l = new ListInstance("", foc);
 						list.setfocus(l);
 						foc.add(0, l);
-				}else if((e.getKeyChar()+"").matches("\\d")){
-					foc.setpriority(Integer.parseInt(e.getKeyChar()+""));
+				}else if(KeyEvent.getKeyText(key).matches("\\d")){
+					foc.setpriority(Integer.parseInt(KeyEvent.getKeyText(key)));
 				}
 			}else if(key == KeyEvent.VK_UP){
 				((ListInstance) foc.holder).setfocus((ListInstance) foc.prev());
@@ -219,8 +219,4 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
                 block != Character.UnicodeBlock.SPECIALS;
     }
 	//endregion
-	@Override
-	void update() {
-		super.update();
-	}
 }
