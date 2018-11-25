@@ -10,7 +10,7 @@ class PriorityPanel extends ListPanel implements MouseInputListener, MouseWheelL
 	}
 	@Override
 	void update() {
-		list = new ListInstance(orig).prioitysort();
+		list = new OrderedList(orig).prioitysort();
 		super.update();
 	}
 }

@@ -40,7 +40,10 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
         g2.setStroke(new BasicStroke(3));
 		g2.setFont(Settings.font.deriveFont((float) Settings.fontsize));
         g2.translate(0, scroll);
-		list.draw(g2, 0, new Point(Settings.indent, Settings.indent), list.hover(g2, click2.x, click2.y-(int) scroll));
+		((OrderedList) list).draw(g2, 0,
+			new Point(Settings.indent, Settings.indent),
+			((OrderedList) list).hover(g2, click2.x, click2.y-(int) scroll)
+		);
         g2.translate(0, -scroll);
 	}
 	//region mouse
@@ -50,11 +53,11 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	@Override
 	public void mousePressed(MouseEvent e) {
 		click2 = click = e.getPoint();
-		selectdrag = list.get(g2, (int) click.getX(), (int) click.getY()-(int) scroll).equals(list.getfocus());
+		selectdrag = ((OrderedList) list).get(g2, (int) click.getX(), (int) click.getY()-(int) scroll).equals(((OrderedList) list).getfocus());
 	}
 	public void mouseReleased(MouseEvent e) {
 		if(Math.abs(click.x-e.getX())<5 && Math.abs(click.y-e.getY())<5){
-			list.get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll).click(g2, e.getX());
+			((OrderedList) list).get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll).click(g2, e.getX());
 		}else if(!selectdrag){
 			scroll -= click2.y-e.getY();
 		}
@@ -71,8 +74,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(selectdrag){
-			List temp = list.getfocus();
-			List temp2 = list.get(g2, (int) e.getX(), (int) e.getY()-(int) scroll);
+			List temp = ((OrderedList) list).getfocus();
+			List temp2 = ((OrderedList) list).get(g2, (int) e.getX(), (int) e.getY()-(int) scroll);
 			if(temp == temp2 && e.getX()-click.getX() > Settings.indent){
 				int i = temp.holder.items.indexOf(temp);
 				if(i > 0){
@@ -90,18 +93,18 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 			}else if(temp.level() == temp2.level() && temp.holder == temp2.holder){
 				if(click2.getY() < e.getY()){
 					list.set(temp2, temp);
-					list.set(list.getfocus(), temp2);
+					list.set(((OrderedList) list).getfocus(), temp2);
 				}else{
-					list.set(list.getfocus(), temp2);
+					list.set(((OrderedList) list).getfocus(), temp2);
 					list.set(temp2, temp);
 				}
 			}else if(temp.level() > temp2.level() && temp.level() > 1){
 				if(click2.getY() > e.getY()){
-					List foc = list.getfocus();
+					List foc = ((OrderedList) list).getfocus();
 					list.remFrom(foc.holder, foc);
 					list.addTo(foc.holder.holder, foc.holder.holder.items.indexOf(foc.holder), foc);
 				}else{
-					List foc = list.getfocus();
+					List foc = ((OrderedList) list).getfocus();
 					list.remFrom(foc.holder, foc);
 					list.addTo(foc.holder.holder, foc.holder.holder.items.indexOf(foc.holder)+1, foc);
 				}
@@ -129,7 +132,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		ListInstance foc = list.getfocus();
+		OrderedList foc = ((OrderedList) list).getfocus();
 		int key = e.getKeyCode();
 		if(key == KeyEvent.VK_F1){
 			list.clear();
@@ -140,7 +143,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 				foc.persistant = false;
 			}
 		}else if(key == KeyEvent.VK_ESCAPE){
-			list.resetfocus();
+			((OrderedList) list).resetfocus();
 		}else if(foc != null){
 			if(e.isControlDown()){
 				if(key == KeyEvent.VK_RIGHT){
@@ -156,11 +159,11 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 					}
 				}else if(key == KeyEvent.VK_UP){
 					if(foc.holder.items.indexOf(foc)-1 >= 0)Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc), foc.holder.items.indexOf(foc)-1);
-				} else if (key == KeyEvent.VK_DOWN) {
+				}else if(key == KeyEvent.VK_DOWN) {
 					if (foc.holder.items.indexOf(foc) + 1 < foc.holder.items.size())
 						Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc),
 								foc.holder.items.indexOf(foc) + 1);
-				} else if (key == KeyEvent.VK_V) {
+				}else if(key == KeyEvent.VK_V) {
 					try {
 						String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
 							.getData(DataFlavor.stringFlavor);
@@ -173,24 +176,24 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 						e1.printStackTrace();
 					} 
 				}else if(key == KeyEvent.VK_ENTER){
-						ListInstance l = new ListInstance("", foc);
-						list.setfocus(l);
+						OrderedList l = new OrderedList("", foc);
+						((OrderedList) list).setfocus(l);
 						foc.add(0, l);
 				}else if(KeyEvent.getKeyText(key).matches("\\d")){
 					foc.setpriority(Integer.parseInt(KeyEvent.getKeyText(key)));
 				}
 			}else if(key == KeyEvent.VK_UP){
-				((ListInstance) foc.holder).setfocus((ListInstance) foc.prev());
+				((OrderedList) foc.holder).setfocus((OrderedList) foc.prev());
 			}else if(key == KeyEvent.VK_DOWN){
-				if(foc.holder == null) foc.setfocus((ListInstance) foc.propnext());
-				else ((ListInstance) foc.holder).setfocus((ListInstance) foc.propnext());
+				if(foc.holder == null) foc.setfocus((OrderedList) foc.propnext());
+				else ((OrderedList) foc.holder).setfocus((OrderedList) foc.propnext());
 			}else if(key == KeyEvent.VK_RIGHT && foc.cursor < foc.name.getValue().length()){
 				foc.cursor++;
 			}else if(key == KeyEvent.VK_LEFT && foc.cursor > 0){
 				foc.cursor--;
 			}else if(key == KeyEvent.VK_ENTER && foc.holder != null){
-				ListInstance l = new ListInstance("", foc.holder);
-				list.setfocus(l);
+				OrderedList l = new OrderedList("", foc.holder);
+				((OrderedList) list).setfocus(l);
 				foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
 				scroll -= Arith.lineheight(g2)+Settings.line;
 			}else if(key == KeyEvent.VK_BACK_SPACE && foc.cursor != 0){
@@ -219,4 +222,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
                 block != Character.UnicodeBlock.SPECIALS;
     }
 	//endregion
+	void update(List l){
+		list = new OrderedList(l);
+		update();
+	}
 }
