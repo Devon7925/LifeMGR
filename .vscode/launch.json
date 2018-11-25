@@ -6,6 +6,17 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Main",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "com.Main",
+            "args": "",
+            "projectName": "LifeMGR"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch)-Main<LifeMGR>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
