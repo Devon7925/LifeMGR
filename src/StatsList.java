@@ -23,6 +23,7 @@ class StatsList extends ListInstance{
     
     public StatsList(String name, List holder){
         super(name, holder);
+        unorder();
     }
 
     public void draw(Graphics2D g2, int w, int h){
@@ -38,5 +39,9 @@ class StatsList extends ListInstance{
             g2.drawString(i+"", i%3*w/3, (1+i/3)*h/3);
             g2.setFont(f);
         }
+    }
+
+    List merge(List l){
+        return l;
     }
 }

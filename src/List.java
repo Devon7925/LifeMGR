@@ -79,7 +79,7 @@ public class List implements Serializable{
         }
     }
     public List get(List l1){
-        if(l1.name.getValue().equals(name.getValue())){
+        if(l1.id == id){
             return this;
         }else {
             for (List l : items) {
@@ -184,12 +184,8 @@ public class List implements Serializable{
         }
     }
     public List getNext(List l) {
-        if(this.name.getValue().equals(l.name.getValue())){
-            if(items.size() > 0){
-                return get(0);
-            }else{
-                return this.next();
-            }
+        if(this.id == l.id){
+            return this.next();
         }else if(items.size() > 0){
             for(List item : items){
                 if(item.getNext(l) != null) return item.getNext(l);
@@ -199,24 +195,18 @@ public class List implements Serializable{
         return null;
     }
     public List next(){
-        if(holder != null){
-            if(holder.items.indexOf(holder.get(this)) < holder.items.size()-1){
-                return holder.get(holder.items.indexOf(holder.get(this))+1);
-            }else {
-                return holder.next();
-            }
+        if(items.size() > 0){
+            return get(0);
         }else{
-            return getFirst();
+            return upnext();
         }
     }
-    public List propnext(){
-        if(items.size() != 0){
-            return get(0);
-        }else if(holder != null){
+    public List upnext(){
+        if(holder != null){
             if(holder.items.indexOf(this) < holder.items.size()-1){
                 return holder.get(holder.items.indexOf(this)+1);
-            }else {
-                return holder.next();
+            }else{
+                return holder.upnext();
             }
         }else{
             return getFirst();
@@ -228,7 +218,10 @@ public class List implements Serializable{
     }
     public ArrayList<List> find(int prioty){
         List list = new List(this);
-        return (ArrayList<List>) Stream.concat(list.items.stream().filter(n -> n.importance == prioty).map(n->{n.items = (ArrayList<List>) n.items.stream().filter(e -> e.importance == prioty).collect(Collectors.toList()); return n;}), items.stream().filter(e -> e.importance != prioty).flatMap(n->n.find(prioty).stream())).collect(Collectors.toList());
+        return (ArrayList<List>) Stream.concat(
+            list.items.stream().filter(n -> n.importance == prioty).map(n->{n.items = n.find(prioty); return n;}),
+            items.stream().filter(e -> e.importance != prioty).filter(e -> e.find(prioty).size() != 0).map(n->{n.items = n.find(prioty); n.importance = -prioty; return n;})
+        ).collect(Collectors.toList());
     }
     public List top(){
         if(holder == null)return this;

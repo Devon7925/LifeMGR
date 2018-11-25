@@ -61,25 +61,33 @@ class OrderedList extends ListInstance{
         return sum+1;
     }
 
-    public int draw(Graphics2D g2, int indent, Point loc, List hovered) {
+    public int draw(Graphics2D g2, int indent, Point loc, List hovered, boolean priorityLines) {
         drawThis(g2, indent, loc, hovered);
         int i = 1;
-        if(holder != null && ((collapsed && next().importance != importance)||(!collapsed && holder.getNext(this).importance != importance)) && holder.getNext(this) != top()){
+        if(//draw priority lines
+            priorityLines &&
+            holder != null && 
+            ((collapsed && Math.abs(upnext().importance) != Math.abs(importance)) || 
+            (!collapsed && Math.abs(  next().importance) != Math.abs(importance))) && 
+            holder.getNext(this) != top()
+        ){
             g2.setColor(new Color(225, 150, 225));
             g2.drawLine((int) loc.getX()+indent*Settings.indent, (int) loc.getY()+(Arith.lineheight(g2)+Settings.line/2), (int) loc.getX()+200+indent*Settings.indent, (int) loc.getY()+(Arith.lineheight(g2)+Settings.line/2));
         }
         if(!collapsed){
             for(List e : items){
-                if(e instanceof ListInstance)i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(Arith.lineheight(g2)+Settings.line)*i), hovered);
+                if(e instanceof ListInstance)i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(Arith.lineheight(g2)+Settings.line)*i), hovered, priorityLines);
             }
         }
         g2.setColor(Color.lightGray);
-        if(items.size() > 0)//draw clarifying lines
+        if(items.size() > 0){//draw clarifying lines
+            if(selected) g2.setColor(new Color(140, 140, 140));
             g2.drawLine(
                 Settings.indent*indent+loc.x+Arith.lineheight(g2)/4, 
                 loc.y+Arith.lineheight(g2)+Settings.line/2, 
                 Settings.indent*indent+loc.x+Arith.lineheight(g2)/4,
                 loc.y+Arith.lineheight(g2)+(Arith.lineheight(g2)+Settings.line)*(i-1));
+        }
         return i;
     }
     public int drawThis(Graphics2D g2, int indent, Point loc, List hovered) {
@@ -95,7 +103,7 @@ class OrderedList extends ListInstance{
         x += Arith.lineheight(g2)+Settings.linespace;
         g2.setColor(Color.black);
         Font font = g2.getFont();
-        if(progress == 1){
+        if(progress == 1 || importance < 0){
             g2.setColor(Color.gray);
             Hashtable<TextAttribute, Object> attributes = new Hashtable<TextAttribute, Object>();
             attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
@@ -121,7 +129,7 @@ class OrderedList extends ListInstance{
             g2.drawLine((int) (1.0/3.0*Arith.lineheight(g2)+x), 0, (int) (1.0/3.0*Arith.lineheight(g2)+x), Arith.lineheight(g2));
             x += Arith.lineheight(g2);
             g2.setColor(Color.gray);
-            g2.drawString(importance+"", x, Arith.lineheight(g2));
+            g2.drawString(Math.abs(importance)+"", x, Arith.lineheight(g2));
         }
         g2.setColor(Color.black);
         g2.translate(-loc.x-Settings.indent*indent, -loc.y);

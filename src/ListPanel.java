@@ -42,7 +42,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
         g2.translate(0, scroll);
 		((OrderedList) list).draw(g2, 0,
 			new Point(Settings.indent, Settings.indent),
-			((OrderedList) list).hover(g2, click2.x, click2.y-(int) scroll)
+			((OrderedList) list).hover(g2, click2.x, click2.y-(int) scroll),
+			false
 		);
         g2.translate(0, -scroll);
 	}
@@ -185,8 +186,8 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 			}else if(key == KeyEvent.VK_UP){
 				((OrderedList) foc.holder).setfocus((OrderedList) foc.prev());
 			}else if(key == KeyEvent.VK_DOWN){
-				if(foc.holder == null) foc.setfocus((OrderedList) foc.propnext());
-				else ((OrderedList) foc.holder).setfocus((OrderedList) foc.propnext());
+				if(foc.holder == null) foc.setfocus((OrderedList) foc.next());
+				else ((OrderedList) foc.holder).setfocus((OrderedList) foc.next());
 			}else if(key == KeyEvent.VK_RIGHT && foc.cursor < foc.name.getValue().length()){
 				foc.cursor++;
 			}else if(key == KeyEvent.VK_LEFT && foc.cursor > 0){

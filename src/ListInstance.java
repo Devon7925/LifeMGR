@@ -93,12 +93,13 @@ class ListInstance extends List{
         List list = new List(l);
         list.name = name;
         list.progress = progress;
+        list.id = id;
         for (int i = 0; i < items.size(); i++) {
             List elem = list.getFromID(get(i).id);
             if(elem == null){
                 list.add(i, get(i++));
             }else{
-                list.set(elem,((ListInstance) get(i)).merge(elem));
+                list.set(elem, ((ListInstance) get(i)).merge(elem));
             }
         }
         return list;

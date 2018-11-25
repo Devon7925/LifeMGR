@@ -104,8 +104,7 @@ class QuickList extends ListInstance implements Runnable{
         oldactive = active;
         do{
             if(active != null) active = 
-                getNext(
-                    get(active));
+                    active.next();
             else active = this;
         }while(active.getFirst() == null);
         if(active != null) active = active.getFirst();
