@@ -27,17 +27,20 @@ class StatsList extends ListInstance{
     }
 
     public void draw(Graphics2D g2, int w, int h){
+        int index = 0;
         for(int i = 0; i <= 9; i++){
-            g2.setColor(Color.BLUE);
-            if(find(i).size() == 0) g2.setColor(Color.MAGENTA);
-            g2.fillOval(i%3*w/3, i/3*h/3, w/3, h/3);
-            g2.setColor(Color.GREEN);
-            g2.fillArc(i%3*w/3, i/3*h/3, w/3, h/3, 90, (int) (-360*find(i).stream().collect(Collectors.averagingDouble(n->{n.update(); return n.progress;}))));
-            Font f = g2.getFont();
-            g2.setFont(new Font("Ubuntu", Font.PLAIN, 150));
-            g2.setColor(Color.BLACK);
-            g2.drawString(i+"", i%3*w/3, (1+i/3)*h/3);
-            g2.setFont(f);
+            if(find(i).size() != 0){
+                g2.setColor(Color.BLUE);
+                g2.fillOval(index%3*w/3, index/3*h/3, w/3, h/3);
+                g2.setColor(Color.GREEN);
+                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (-360*find(i).stream().collect(Collectors.averagingDouble(n->{n.update(); return n.progress;}))));
+                Font f = g2.getFont();
+                g2.setFont(new Font("Ubuntu", Font.PLAIN, 150));
+                g2.setColor(Color.BLACK);
+                g2.drawString(i+"", index%3*w/3, (1+index/3)*h/3);
+                g2.setFont(f);
+                index++;
+            }
         }
     }
 
