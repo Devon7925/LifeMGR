@@ -63,7 +63,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 			scroll -= click2.y-e.getY();
 		}
 		list.update();
-		if(scroll<-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2))) scroll = -Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2));
+		if(scroll<-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.name.lineheight(g2))) scroll = -Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.name.lineheight(g2));
 		repaint();
 	}
 	@Override
@@ -123,7 +123,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+Arith.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();
+		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.name.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();
 		repaint();
 	}
 	//endregion
@@ -170,7 +170,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 							.getData(DataFlavor.stringFlavor);
 						if(foc.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+data);
 						else foc.name.setValue(foc.name.getValue().substring(0, foc.cursor)+data+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
-						int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
+						int a = (1+foc.level())*Settings.indent+foc.name.linewidth(g2)+Settings.linespace+5*foc.name.lineheight(g2);
 						frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
 						foc.cursor+=data.length();
 					} catch (HeadlessException | UnsupportedFlavorException | IOException e1) {
@@ -184,7 +184,7 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 					foc.setpriority(Integer.parseInt(KeyEvent.getKeyText(key)));
 				}
 			}else if(key == KeyEvent.VK_UP){
-				((OrderedList) foc.holder).setfocus((OrderedList) foc.prev());
+				if(foc.holder != null) ((OrderedList) foc.holder).setfocus((OrderedList) foc.prev());
 			}else if(key == KeyEvent.VK_DOWN){
 				if(foc.holder == null) foc.setfocus((OrderedList) foc.next());
 				else ((OrderedList) foc.holder).setfocus((OrderedList) foc.next());
@@ -196,14 +196,14 @@ class ListPanel extends ListPanelType implements MouseInputListener, MouseWheelL
 				OrderedList l = new OrderedList("", foc.holder);
 				((OrderedList) list).setfocus(l);
 				foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
-				scroll -= Arith.lineheight(g2)+Settings.line;
+				scroll -= foc.name.lineheight(g2)+Settings.line;
 			}else if(key == KeyEvent.VK_BACK_SPACE && foc.cursor != 0){
 				foc.name.setValue(foc.name.getValue().substring(0, foc.cursor-1)+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
 				foc.cursor--;
 			}else if(isPrintableChar(e.getKeyChar())){
 				if(foc.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+e.getKeyChar());
 				else foc.name.setValue(foc.name.getValue().substring(0, foc.cursor)+e.getKeyChar()+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
-				int a = (1+foc.level())*Settings.indent+Arith.linewidth(g2, foc.name)+Settings.linespace+5*Arith.lineheight(g2);
+				int a = (1+foc.level())*Settings.indent+foc.name.linewidth(g2)+Settings.linespace+5*foc.name.lineheight(g2);
 				frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
 				foc.cursor++;
 			}

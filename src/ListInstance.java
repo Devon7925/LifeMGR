@@ -29,8 +29,9 @@ class ListInstance extends List{
         ListInstance l = new ListInstance("", this);
         add(0, l);
     }
+
     public void set(Graphics2D g2, int x, int y, List l) {
-        int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
+        int index = Math.floorDiv(y, l.name.lineheight(g2)+Settings.line);
         index = index(index);
         if(index < 0){
             return;
@@ -39,9 +40,10 @@ class ListInstance extends List{
         }else if(index > items.size()){
             return;
         }else{
-            ((ListInstance) get(--index)).set(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)), l);
+            ((ListInstance) get(--index)).set(g2, x-Settings.indent, (y-(countit(index))*(l.name.lineheight(g2)+Settings.line)), l);
         }
     }
+
     public ListInstance prioitysort(){
         List orig = new List(this);
         ListInstance l = new ListInstance(orig.name.getValue(), null);
@@ -55,6 +57,7 @@ class ListInstance extends List{
     boolean equals(ListInstance list){
         return id == list.id;
     }
+
     public int index(int index2){
         int index = index2-1;
         if(index>=0){
@@ -68,26 +71,14 @@ class ListInstance extends List{
         }
         return index+1;
     }
-    public int countit() {
-        int sum = 0;
-        for(List e : items){
-            sum += ((ListInstance) e).countit();
-        }
-        return sum+1;
-    }
-    public int countit(int index) {
-        int sum = 0;
-        for(int i = 0; i < index; i++){
-            sum += ((ListInstance) get(i)).countit();
-        }
-        return sum+1;
-    }
+
     void unorder(){
         ordered = false;
         for (List l : items) {
             ((ListInstance) l).unorder();
         }
     }
+    
     List merge(List l){
         if(ordered) return this;
         List list = new List(l);

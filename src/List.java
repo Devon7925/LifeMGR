@@ -10,13 +10,11 @@ public class List implements Serializable{
 	ArrayList<List> items;
     List holder;
     
-    boolean setsucess;
     double progress;
     int importance;
     
     boolean persistant = false;
     int id = -1;
-
 
     public List(String name, List holder){
         this.name = new MutableString(name);
@@ -27,65 +25,49 @@ public class List implements Serializable{
             importance = holder.importance;
         items = new ArrayList<List>();
     }
+
     public List(List list){
         this(list.name.getValue(), list.holder!=null?list.holder:null);
         items = new ArrayList<>(list.items.size());
-        for(List l : list.items)
-            items.add(new List(l));
+        list.items.forEach(n->items.add(new List(n)));
         progress = list.progress;
         importance = list.importance;
         persistant = list.persistant;
         id = list.id;
     }
+
     public void update() {
         if(id == -1) id = ID.getId();
         if(items.size() == 0) return;
         progress = 0;
-        for(List e : items){
-            e.holder = this;
-            e.update();
-            progress += e.progress;
-        }
-        progress /= items.size();
+        items.forEach(n->n.update());
+        progress = items.stream().collect(Collectors.averagingDouble(n -> n.progress));
         if(items.size() == 0) progress = 1;
     }
     public void check(boolean b){
-        for(List e : items){
-            e.check(b);
-        }
+        items.forEach(n->n.check(b));
         progress = b?1:0;
         update();
     }
     void clear(){
-        ArrayList<List> toremove = new ArrayList<List>();
-        for(List e : items){
-            e.clear();
-            if(e.progress == 1){
-                if(e.persistant) e.progress = 0;
-                else toremove.add(e);
-            }
+        items.forEach(n->n.clear());
+        if(progress == 1){
+            if(persistant) progress = 0;
+            else holder.remove(this);
         }
-        items.removeAll(toremove);
     }
     void setpersistant(){
         persistant = true;
         if(holder != null)holder.setpersistant();
     }
     public int level(){
-        if(holder != null){
-            return holder.level()+1;
-        }else{
-            return 0;
-        }
+        return holder == null?0:(holder.level()+1);
     }
     public List get(List l1){
         if(l1.id == id){
             return this;
         }else {
-            for (List l : items) {
-                if(l.get(l1) != null) return l.get(l1);
-            }
-            return null;
+            return items.stream().map(n -> n.get(l1)).filter(n -> n != null).findAny().orElse(null);
         }
     }
     public List get(int index){
@@ -93,19 +75,14 @@ public class List implements Serializable{
     }
     public List getFromID(int id){
         if(this.id == id) return this;
-        for (List l : items) {
-            if(l.getFromID(id) != null) return l.getFromID(id);
-        }
-        return null;
+        return items.stream().map(n->n.getFromID(id)).filter(n->n!=null).findAny().orElse(null);
     }
     public boolean set(List l1, List l2){
         if(items.contains(l1)){
             items.set(items.indexOf(l1), l2);
             return true;
         }else {
-            setsucess = false;
-            items.forEach(n -> {if(n.set(l1, l2)) {setsucess = true;} });
-            return setsucess;
+            return items.stream().anyMatch(n->n.set(l1, l2));
         }
     }
     public void addAll(ArrayList<List> e) {
@@ -130,9 +107,7 @@ public class List implements Serializable{
             l2.holder = this;
             return true;
         }else {
-            setsucess = false;
-            items.forEach(n -> {if(n.addTo(l1, l2)) {setsucess = true;} });
-            return setsucess;
+            return items.stream().anyMatch(n -> n.addTo(l1, l2));
         }
     }
     public boolean addTo(List l1, int i, List l2){
@@ -141,9 +116,7 @@ public class List implements Serializable{
             l2.holder = this;
             return true;
         }else {
-            setsucess = false;
-            items.forEach(n -> {if(n.addTo(l1, l2)) {setsucess = true;} });
-            return setsucess;
+            return items.stream().anyMatch(n -> n.addTo(l1, i, l2));
         }
     }
     public void remove(List e) {
@@ -155,17 +128,12 @@ public class List implements Serializable{
             get(items.indexOf(l1)).remove(l2);
             return true;
         }else {
-            setsucess = false;
-            items.forEach(n -> {if(n.remFrom(l1, l2)) {setsucess = true;} });
-            return setsucess;
+            return items.stream().anyMatch(n -> n.remFrom(l1, l2));
         }
     }
     public List getFirst() {
         if(items.size() > 0){
-            for(List l : items){
-                if(l.getFirst() != null) return l.getFirst();
-            }
-            return null;
+            return items.stream().map(n -> n.getFirst()).filter(n -> n != null).findAny().orElse(null);
         }else if(progress == 0){
             return this;
         }else{
@@ -187,10 +155,7 @@ public class List implements Serializable{
         if(this.id == l.id){
             return this.next();
         }else if(items.size() > 0){
-            for(List item : items){
-                if(item.getNext(l) != null) return item.getNext(l);
-            }
-            return null;
+            return items.stream().map(n -> n.getNext(l)).filter(n -> n != null).findAny().orElse(null);
         }
         return null;
     }
@@ -226,5 +191,11 @@ public class List implements Serializable{
     public List top(){
         if(holder == null)return this;
         return holder.top();
+    }
+    public int countit() {
+        return items.stream().collect(Collectors.summingInt(n -> n.countit()))+1;
+    }
+    public int countit(int index) {
+        return items.subList(0, index).stream().collect(Collectors.summingInt(n -> n.countit()))+1;
     }
 }

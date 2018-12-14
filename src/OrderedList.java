@@ -33,32 +33,27 @@ class OrderedList extends ListInstance{
     public OrderedList(String name, List holder){
         super(name, holder);
     }
+
     void setfocus(OrderedList focus){
         resetfocus();
         focus.selected = true;
         focus.cursor = focus.name.getValue().length();
     }
+
     OrderedList getfocus(){
         if(selected) {
             return this;
         }
-        for(List l : items){
-            if(((OrderedList) l).getfocus() != top()) return ((OrderedList) l).getfocus();
-        }
-        return (OrderedList) top();
+        return items.stream().map(n -> ((OrderedList) n).getfocus()).filter(n -> n != top()).findAny().orElse(top());
     }
+
     void resetfocus(){
         selected = false;
-        for(List l : items){
-            ((OrderedList) l).resetfocus();
-        }
+        items.forEach(n -> ((OrderedList) n).resetfocus());
     }
+
     public int countit() {
-        int sum = 0;
-        if(!collapsed) for(List e : items){
-            sum += ((ListInstance) e).countit();
-        }
-        return sum+1;
+        return 1+(collapsed?0:items.stream().collect(Collectors.summingInt(n -> n.countit())));
     }
 
     public int draw(Graphics2D g2, int indent, Point loc, List hovered, boolean priorityLines) {
@@ -72,35 +67,36 @@ class OrderedList extends ListInstance{
             holder.getNext(this) != top()
         ){
             g2.setColor(new Color(225, 150, 225));
-            g2.drawLine((int) loc.getX()+indent*Settings.indent, (int) loc.getY()+(Arith.lineheight(g2)+Settings.line/2), (int) loc.getX()+200+indent*Settings.indent, (int) loc.getY()+(Arith.lineheight(g2)+Settings.line/2));
+            g2.drawLine((int) loc.getX()+indent*Settings.indent, (int) loc.getY()+(name.lineheight(g2)+Settings.line/2), (int) loc.getX()+200+indent*Settings.indent, (int) loc.getY()+(name.lineheight(g2)+Settings.line/2));
         }
         if(!collapsed){
             for(List e : items){
-                if(e instanceof ListInstance)i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(Arith.lineheight(g2)+Settings.line)*i), hovered, priorityLines);
+                i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(e.name.lineheight(g2)+Settings.line)*i), hovered, priorityLines);
             }
         }
         g2.setColor(Color.lightGray);
         if(items.size() > 0){//draw clarifying lines
             if(selected) g2.setColor(new Color(140, 140, 140));
             g2.drawLine(
-                Settings.indent*indent+loc.x+Arith.lineheight(g2)/4, 
-                loc.y+Arith.lineheight(g2)+Settings.line/2, 
-                Settings.indent*indent+loc.x+Arith.lineheight(g2)/4,
-                loc.y+Arith.lineheight(g2)+(Arith.lineheight(g2)+Settings.line)*(i-1));
+                Settings.indent*indent+loc.x+name.lineheight(g2)/4, 
+                loc.y+name.lineheight(g2)+Settings.line/2, 
+                Settings.indent*indent+loc.x+name.lineheight(g2)/4,
+                loc.y+name.lineheight(g2)+(name.lineheight(g2)+Settings.line)*(i-1));
         }
         return i;
     }
+    
     public int drawThis(Graphics2D g2, int indent, Point loc, List hovered) {
         g2.translate(loc.x+Settings.indent*indent, loc.y);
         g2.setColor(Color.blue);
         int x = 0;
-        g2.fillOval(0, 0, Arith.lineheight(g2), Arith.lineheight(g2));
+        g2.fillOval(0, 0, name.lineheight(g2), name.lineheight(g2));
         g2.setColor(Color.green);
-        g2.fillArc(0, 0, (int) (1.1*Arith.lineheight(g2)), (int) (1.1*Arith.lineheight(g2)), 90, (int) (-360*progress));
+        g2.fillArc(0, 0, (int) (1.1*name.lineheight(g2)), (int) (1.1*name.lineheight(g2)), 90, (int) (-360*progress));
         g2.setColor(Color.white);
         if(persistant)
-            g2.fillOval(5*Arith.lineheight(g2)/12, 5*Arith.lineheight(g2)/12, Arith.lineheight(g2)/3, Arith.lineheight(g2)/3);
-        x += Arith.lineheight(g2)+Settings.linespace;
+            g2.fillOval(5*name.lineheight(g2)/12, 5*name.lineheight(g2)/12, name.lineheight(g2)/3, name.lineheight(g2)/3);
+        x += name.lineheight(g2)+Settings.linespace;
         g2.setColor(Color.black);
         Font font = g2.getFont();
         if(progress == 1 || importance < 0){
@@ -111,48 +107,50 @@ class OrderedList extends ListInstance{
         }
         if(selected){
             g2.setColor(Color.magenta);
-            g2.drawLine(x+Arith.linewidth(g2, new MutableString(name.getValue().substring(0, cursor))), 0, x+Arith.linewidth(g2, new MutableString(name.getValue().substring(0, cursor))), Arith.lineheight(g2));
+            MutableString nameToCursor = new MutableString(name.getValue().substring(0, cursor));
+            g2.drawLine(x+nameToCursor.linewidth(g2), 0, x+nameToCursor.linewidth(g2), name.lineheight(g2));
         }
-        g2.drawString(name.getValue(), x, Arith.lineheight(g2));
+        g2.drawString(name.getValue(), x, name.lineheight(g2));
         g2.setFont(font);
         if(this == hovered){
-            x += Settings.linespace+((Arith.linewidth(g2, name)>Settings.buttondist)?Arith.linewidth(g2, name):Settings.buttondist);
-            g2.fillOval(x, (int) (Arith.lineheight(g2)/6.0), (int) (Arith.lineheight(g2)/1.5), (int) (Arith.lineheight(g2)/1.5));
+            x += Settings.linespace+((name.linewidth(g2)>Settings.buttondist)?name.linewidth(g2):Settings.buttondist);
+            g2.fillOval(x, (int) (name.lineheight(g2)/6.0), (int) (name.lineheight(g2)/1.5), (int) (name.lineheight(g2)/1.5));
             g2.setColor(Color.red);
-            g2.drawLine(x, Arith.lineheight(g2), (int) (2.0/3.0*Arith.lineheight(g2)+x), 0);
-            g2.drawLine(x, 0, (int) (2.0/3.0*Arith.lineheight(g2)+x), Arith.lineheight(g2));
-            x += Arith.lineheight(g2);
+            g2.drawLine(x, name.lineheight(g2), (int) (2.0/3.0*name.lineheight(g2)+x), 0);
+            g2.drawLine(x, 0, (int) (2.0/3.0*name.lineheight(g2)+x), name.lineheight(g2));
+            x += name.lineheight(g2);
             g2.setColor(Color.black);
-            g2.fillOval(x, (int) (Arith.lineheight(g2)/6.0), (int) (Arith.lineheight(g2)/1.5), (int) (Arith.lineheight(g2)/1.5));
+            g2.fillOval(x, (int) (name.lineheight(g2)/6.0), (int) (name.lineheight(g2)/1.5), (int) (name.lineheight(g2)/1.5));
             g2.setColor(Color.green);
-            g2.drawLine(x, Arith.lineheight(g2)/2, (int) (2.0/3.0*Arith.lineheight(g2)+x), Arith.lineheight(g2)/2);
-            g2.drawLine((int) (1.0/3.0*Arith.lineheight(g2)+x), 0, (int) (1.0/3.0*Arith.lineheight(g2)+x), Arith.lineheight(g2));
-            x += Arith.lineheight(g2);
+            g2.drawLine(x, name.lineheight(g2)/2, (int) (2.0/3.0*name.lineheight(g2)+x), name.lineheight(g2)/2);
+            g2.drawLine((int) (1.0/3.0*name.lineheight(g2)+x), 0, (int) (1.0/3.0*name.lineheight(g2)+x), name.lineheight(g2));
+            x += name.lineheight(g2);
             g2.setColor(Color.gray);
-            g2.drawString(Math.abs(importance)+"", x, Arith.lineheight(g2));
+            g2.drawString(Math.abs(importance)+"", x, name.lineheight(g2));
         }
         g2.setColor(Color.black);
         g2.translate(-loc.x-Settings.indent*indent, -loc.y);
         return 1;
     }
+
     public void click(Graphics2D g2, int x) {
         x -= Settings.indent*level();
         int x1 = 0;
         if(x < x1){
             if(top() == null){
                 resetfocus();
-            }else if(top() instanceof ListInstance){
-                ((OrderedList) top()).resetfocus();
+            }else{
+                top().resetfocus();
             }
             return;
         }
-        x1 += Arith.lineheight(g2)+2*Settings.linespace;
+        x1 += name.lineheight(g2)+2*Settings.linespace;
         if(x < x1) {
             check(progress < 1);
-            ((OrderedList) top()).setfocus(this);
+            top().setfocus(this);
             return;
         }
-        x1 += Settings.linespace+((Arith.linewidth(g2, name)>Settings.buttondist)?Arith.linewidth(g2, name):Settings.buttondist);
+        x1 += Settings.linespace+((name.linewidth(g2)>Settings.buttondist)?name.linewidth(g2):Settings.buttondist);
         if(x < x1) {
             if(selected) {
                 collapsed = !collapsed;
@@ -160,40 +158,41 @@ class OrderedList extends ListInstance{
                     collapsed = false;
                 }
             }
-            ((OrderedList) top()).setfocus(this);
+            top().setfocus(this);
             return;
         }
-        x1 += Arith.lineheight(g2);
+        x1 += name.lineheight(g2);
         if(x < x1){
             holder.remove(this);
             return;
         }
-        x1 += Arith.lineheight(g2);
+        x1 += name.lineheight(g2);
         if(x < x1){
             addto();
             return;
         }else{
             if(top() == null){
                 resetfocus();
-            }else if(top() instanceof ListInstance){
-                ((OrderedList) top()).resetfocus();
+            }else {
+                top().resetfocus();
             }
             return;
         }
     }
     public List hover(Graphics2D g2, int x, int y) {
-        int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
+        int index = Math.floorDiv(y, name.lineheight(g2)+Settings.line);
         index = index(index);
         if(index <= 0){
             return this;
         }else if(index > items.size()){
             return null;
         }else{
-            return ((OrderedList) get(--index)).hover(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)));
+            return ((OrderedList) get(--index)).hover(g2, x-Settings.indent, (y-(countit(index))*(name.lineheight(g2)+Settings.line)));
         }
     }
+
     public OrderedList get(Graphics2D g2, int x, int y) {
-        int index = Math.floorDiv(y, Arith.lineheight(g2)+Settings.line);
+        int index = Math.floorDiv(y, name.lineheight(g2)+Settings.line);
         index = index(index);
         if(index < 0){
             return new OrderedList("", null);
@@ -202,14 +201,16 @@ class OrderedList extends ListInstance{
         }else if(index > items.size()){
             return new OrderedList("", null);
         }else{
-            return ((OrderedList) get(--index)).get(g2, x-Settings.indent, (y-(countit(index))*(Arith.lineheight(g2)+Settings.line)));
+            return ((OrderedList) get(--index)).get(g2, x-Settings.indent, (y-(countit(index))*(name.lineheight(g2)+Settings.line)));
         }
     }
+
     public void addto() {
         OrderedList l = new OrderedList("", this);
         add(0, l);
         setfocus(l);
     }
+
     public OrderedList prioitysort(){
         List orig = new List(this);
         OrderedList l = new OrderedList(orig.name.getValue(), null);
@@ -218,5 +219,9 @@ class OrderedList extends ListInstance{
         }
         l.unorder();
         return l;
+    }
+    public OrderedList top(){
+        if(holder == null)return this;
+        return ((OrderedList) holder).top();
     }
 }
