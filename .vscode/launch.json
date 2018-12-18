@@ -11,7 +11,7 @@
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopOnEntry": false,
-            "mainClass": "com.Main",
+            "mainClass": "Main",
             "args": "",
             "projectName": "LifeMGR"
         },
@@ -22,7 +22,7 @@
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopOnEntry": false,
-            "mainClass": "Main",
+            "mainClass": "com.Main",
             "projectName": "LifeMGR",
             "args": ""
         },
