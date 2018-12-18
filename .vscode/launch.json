@@ -22,7 +22,7 @@
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopOnEntry": false,
-            "mainClass": "com.Main",
+            "mainClass": "com.importknowledge.lifemgr.rendering.Main",
             "projectName": "LifeMGR",
             "args": ""
         },
