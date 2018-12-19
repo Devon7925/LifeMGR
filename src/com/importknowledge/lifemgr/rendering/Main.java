@@ -31,20 +31,21 @@ public class Main extends JFrame implements ActionListener{
 	JSplitPane pane;
 	QuickPanel quickpanel;
 	static JPanel tabs;
-	String path = System.getProperty("user.home")+"/Desktop/yay.list";//Public/eclipse-workspace/LifeMGR/yay.list";
+	String inpath = System.getProperty("user.home")+"/Desktop/yay.list";
+	String outpath = System.getProperty("user.home")+"/Desktop/yay.list";
 
 	public Main() {
 		list = new List("ToDo", null);
-		if(new File(path).exists()) list = deserialzeAddress(path);
+		if(new File(inpath).exists()) list = deserialzeAddress(inpath);
 		setLocation(20, 20);
 		setSize(700, 1200);
 		setTitle("LifeMGR");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		tabs = new JPanel();
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
-		new JButab("List"  , this, new     ListPanel(list, this, path), tabs);
+		new JButab("List"  , this, new     ListPanel(list, this, outpath), tabs);
 		new JButab("Quick" , this, new    QuickPanel(list, this      ), tabs);
-		new JButab("Sorted", this, new PriorityPanel(list, this, path), tabs);
+		new JButab("Sorted", this, new PriorityPanel(list, this, outpath), tabs);
 		new JButab("Stats" , this, new    StatsPanel(list, this      ), tabs);
 		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		
 		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, ((JButab) tabs.getComponent(0)).panel);
@@ -60,7 +61,7 @@ public class Main extends JFrame implements ActionListener{
             @Override
             public void windowClosing(WindowEvent e)
             {
-				serializeAddress(new List(((ListPanelType) pane.getBottomComponent()).list.merge(list)), path);
+				serializeAddress(new List(((ListPanelType) pane.getBottomComponent()).list.merge(list)), outpath);
                 e.getWindow().dispose();
             }
         });

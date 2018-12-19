@@ -21,7 +21,7 @@ public class QuickList extends ListInstance implements Runnable{
 
     public  QuickList(List list, QuickPanel panel) {
         super(list);
-        items = new ArrayList<>(items.stream().map(n -> new ListInstance(n, this)).collect(Collectors.toList()));
+        items = new ArrayList<>(items.stream().map(n -> new ListInstance((List) n, this)).collect(Collectors.toList()));
         this.panel = panel;
     }
 
@@ -54,13 +54,14 @@ public class QuickList extends ListInstance implements Runnable{
 			if(active.holder != null){
 				d.setFont(new Font("TimesRoman", Font.PLAIN, 25));
 				double x = (oldactive.holder == active.holder)?-0.5:1.5-anim;
-				len = active.holder.name.getValue().length()*0.01;
+				List hold = (List) active.holder;
+				len = hold.name.getValue().length()*0.01;
 				d.setColor(new Color(100, 100, 255));
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, 0.25+len, 0.1));
 				d.setColor(Color.GREEN);
-				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, active.holder.progress*(0.25+len), active.holder.progress*0.1));
+				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, hold.progress*(0.25+len), hold.progress*0.1));
 				d.setColor(Color.black);
-				d.drawString(active.holder.name.getValue(), x, 0.15);
+				d.drawString(hold.name.getValue(), x, 0.15);
 				d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			}
 		}
@@ -77,14 +78,15 @@ public class QuickList extends ListInstance implements Runnable{
 			if(oldactive.holder != null){
 				d.setFont(new Font("TimesRoman", Font.PLAIN, 25));
 				double x = (oldactive.holder == active.holder)?0.5:0.5-anim;
-				len = oldactive.holder.name.getValue().length()*0.01;
+				List hold = (List) oldactive.holder;
+				len = hold.name.getValue().length()*0.01;
 				d.setColor(new Color(100, 100, 255));
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, 0.25+len, 0.1));
 				d.setColor(Color.GREEN);
-				double val = oldprogress+(oldactive.holder.progress-oldprogress)*anim;
+				double val = oldprogress+(hold.progress-oldprogress)*anim;
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, val*(0.25+len), val*0.1));
 				d.setColor(Color.black);
-				d.drawString(oldactive.holder.name.getValue(), x, 0.15);
+				d.drawString(hold.name.getValue(), x, 0.15);
 				d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			}
 		}
@@ -92,26 +94,26 @@ public class QuickList extends ListInstance implements Runnable{
 
     public void complete(){
         if(active != null) {
-            if(active.holder != null)oldprogress = active.holder.progress;
+            if(active.holder != null)oldprogress = ((List) active.holder).progress;
             active.check(true);
         }
         update();
         new Thread(this).start();
         oldactive = active;
-        active = getFirst();
+        active = (List) getFirst();
     }
 
     public void skip(){
-        if(active.holder != null)oldprogress = active.holder.progress;
+        if(active.holder != null)oldprogress = ((List) active.holder).progress;
         update();
         new Thread(this).start();
         oldactive = active;
         do{
             if(active != null) active = 
-                    active.next();
+                    (List) active.next();
             else active = this;
         }while(active.getFirst() == null);
-        if(active != null) active = active.getFirst();
+        if(active != null) active = (List) active.getFirst();
     }
 
 	@Override
@@ -130,7 +132,7 @@ public class QuickList extends ListInstance implements Runnable{
 
     public void update(){
         super.update();
-		if(active == null) oldactive = active = getFirst();
+		if(active == null) oldactive = active = (List) getFirst();
     }
 
     public QuickList prioitysort(){

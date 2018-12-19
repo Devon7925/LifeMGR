@@ -152,23 +152,24 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 			((OrderedList) list).resetfocus();
 		}else if(foc != null){
 			if(e.isControlDown()){
+				List hold = (List) foc.holder;
 				if(key == KeyEvent.VK_RIGHT){
-					int i = foc.holder.items.indexOf(foc)-1;
-					if(i < foc.holder.items.size() && i >= 0){
-						foc.holder.remove(foc);
-						foc.holder.items.get(i).add(foc);
+					int i = hold.items.indexOf(foc)-1;
+					if(i < hold.items.size() && i >= 0){
+						hold.remove(foc);
+						hold.items.get(i).add(foc);
 					}
 				}else if(key == KeyEvent.VK_LEFT){
-					if(foc.holder.holder != null){
-						foc.holder.remove(foc);
-						foc.holder.holder.add(foc.holder.holder.items.indexOf(foc.holder)+1, foc);
+					if(hold.holder != null){
+						hold.remove(foc);
+						hold.holder.add(hold.holder.items.indexOf(hold)+1, foc);
 					}
 				}else if(key == KeyEvent.VK_UP){
-					if(foc.holder.items.indexOf(foc)-1 >= 0)Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc), foc.holder.items.indexOf(foc)-1);
+					if(hold.items.indexOf(foc)-1 >= 0)Collections.swap(hold.items, hold.items.indexOf(foc), hold.items.indexOf(foc)-1);
 				}else if(key == KeyEvent.VK_DOWN) {
-					if (foc.holder.items.indexOf(foc) + 1 < foc.holder.items.size())
-						Collections.swap(foc.holder.items, foc.holder.items.indexOf(foc),
-								foc.holder.items.indexOf(foc) + 1);
+					if (hold.items.indexOf(foc) + 1 < hold.items.size())
+						Collections.swap(hold.items, hold.items.indexOf(foc),
+								hold.items.indexOf(foc) + 1);
 				}else if(key == KeyEvent.VK_V) {
 					try {
 						String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
@@ -198,9 +199,9 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 			}else if(key == KeyEvent.VK_LEFT && foc.cursor > 0){
 				foc.cursor--;
 			}else if(key == KeyEvent.VK_ENTER && foc.holder != null){
-				OrderedList l = new OrderedList("", foc.holder);
+				OrderedList l = new OrderedList("", (List) foc.holder);
 				((OrderedList) list).setfocus(l);
-				foc.holder.add(foc.holder.items.indexOf(foc)+1, l);
+				((List) foc.holder).add(((List) foc.holder).items.indexOf(foc)+1, l);
 				scroll -= foc.name.lineheight(g2)+Settings.line;
 			}else if(key == KeyEvent.VK_BACK_SPACE && foc.cursor != 0){
 				foc.name.setValue(foc.name.getValue().substring(0, foc.cursor-1)+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));

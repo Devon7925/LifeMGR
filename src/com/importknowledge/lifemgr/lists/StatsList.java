@@ -11,7 +11,7 @@ public class StatsList extends ListInstance{
 
     public StatsList(List list) {
         super(list);
-        items = new ArrayList<>(items.stream().map(n -> new StatsList(n, this)).collect(Collectors.toList()));
+        items = new ArrayList<>(items.stream().map(n -> new StatsList((List) n, this)).collect(Collectors.toList()));
     }
 
     public StatsList(List list, StatsList holder) {

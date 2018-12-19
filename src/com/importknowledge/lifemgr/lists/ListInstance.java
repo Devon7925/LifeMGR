@@ -12,7 +12,7 @@ public class ListInstance extends List{
 
     public  ListInstance(List list) {
         super(list);
-        items = new ArrayList<>(items.stream().map(n -> new ListInstance(n, this)).collect(Collectors.toList()));
+        items = new ArrayList<>(items.stream().map(n -> new ListInstance((List) n, this)).collect(Collectors.toList()));
     }
 
     public ListInstance(List list, ListInstance holder) {
@@ -77,7 +77,7 @@ public class ListInstance extends List{
 
     void unorder(){
         ordered = false;
-        for (List l : items) {
+        for (AbsList l : items) {
             ((ListInstance) l).unorder();
         }
     }
@@ -89,7 +89,7 @@ public class ListInstance extends List{
         list.progress = progress;
         list.id = id;
         for (int i = 0; i < items.size(); i++) {
-            List elem = list.getFromID(get(i).id);
+            List elem = (List) list.getFromID(get(i).id);
             if(elem == null){
                 list.add(i, get(i++));
             }else{

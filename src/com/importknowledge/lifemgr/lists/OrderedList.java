@@ -19,7 +19,7 @@ public class OrderedList extends ListInstance{
 
     public  OrderedList(List list) {
         super(list);
-        items = new ArrayList<>(items.stream().map(n -> new OrderedList(n, this)).collect(Collectors.toList()));
+        items = new ArrayList<>(items.stream().map(n -> new OrderedList((List) n, this)).collect(Collectors.toList()));
     }
 
     public OrderedList(List list, OrderedList holder) {
@@ -65,16 +65,16 @@ public class OrderedList extends ListInstance{
         if(//draw priority lines
             priorityLines &&
             holder != null && 
-            ((collapsed && Math.abs(upnext().importance) != Math.abs(importance)) || 
-            (!collapsed && Math.abs(  next().importance) != Math.abs(importance))) && 
+            ((collapsed && Math.abs(((List) upnext()).importance) != Math.abs(importance)) || 
+            (!collapsed && Math.abs(((List)   next()).importance) != Math.abs(importance))) && 
             holder.getNext(this) != top()
         ){
             g2.setColor(new Color(225, 150, 225));
             g2.drawLine((int) loc.getX()+indent*Settings.indent, (int) loc.getY()+(name.lineheight(g2)+Settings.line/2), (int) loc.getX()+200+indent*Settings.indent, (int) loc.getY()+(name.lineheight(g2)+Settings.line/2));
         }
         if(!collapsed){
-            for(List e : items){
-                i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(e.name.lineheight(g2)+Settings.line)*i), hovered, priorityLines);
+            for(AbsList e : items){
+                i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(((List) e).name.lineheight(g2)+Settings.line)*i), hovered, priorityLines);
             }
         }
         g2.setColor(Color.lightGray);
