@@ -12,14 +12,14 @@ public class Settings {
         }
         return null;
 	}
-	public static int 
+	public final static int 
         indent = 15,
         line = 20,
         linespace = 5,
         fontsize = 35,
         buttondist = 300;
-    public static double
+    public final static double
         scroll = 7.5;
-    public static Font
+    public final static Font
         font = extracted();
 }
