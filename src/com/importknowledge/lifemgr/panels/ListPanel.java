@@ -164,18 +164,22 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 					if(i < hold.items.size() && i >= 0){
 						hoold.remove(focuus);
 						hoold.items.get(i).add(foc);
+						((OrderedList) hoold.items.get(i)).setfocus((OrderedList) foc.instance(list));
 					}
 				}else if(key == KeyEvent.VK_LEFT){
 					if(hold.holder != null){
 						hoold.remove(focuus);
 						hoold.holder.add(hold.holder.items.indexOf(hold)+1, foc);
+						((OrderedList) hoold.holder).setfocus((OrderedList) foc.instance(list));
 					}
 				}else if(key == KeyEvent.VK_UP && hold.items.indexOf(foc)-1 >= 0){
 					Collections.swap(hold.items, hold.items.indexOf(foc), hold.items.indexOf(foc)-1);
 					update(list.correct());
+					((OrderedList) hoold).setfocus((OrderedList) foc.instance(list));
 				}else if(key == KeyEvent.VK_DOWN && hold.items.indexOf(foc)+1 < hold.items.size()){
 					Collections.swap(hold.items, hold.items.indexOf(foc), hold.items.indexOf(foc)+1);
 					update(list.correct());
+					((OrderedList) hoold).setfocus((OrderedList) foc.instance(list));
 				}else if(key == KeyEvent.VK_V) {
 					try {
 						String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()

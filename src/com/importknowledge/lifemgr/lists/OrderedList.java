@@ -20,6 +20,7 @@ public class OrderedList extends ListInstance{
     public  OrderedList(AbsList list, List orig) {
         super(list, orig);
         items = new ArrayList<>(list.items.stream().map(n -> n instanceof List?new OrderedList((List) n, this):new OrderedList(n, this)).collect(Collectors.toList()));
+        if(items.size()*correct().level() >= 7) collapsed = true;
     }
 
     public OrderedList(AbsList list, OrderedList holder) {
@@ -68,7 +69,7 @@ public class OrderedList extends ListInstance{
             }
         }
         g2.setColor(Color.lightGray);
-        if(items.size() > 0){//draw clarifying lines
+        if(correct().items.size() > 0){//draw clarifying lines
             if(selected) g2.setColor(new Color(140, 140, 140));
             g2.drawLine(
                 Settings.indent*indent+loc.x+((List) correct().top().getFromID(id)).name.lineheight(g2)/4, 
