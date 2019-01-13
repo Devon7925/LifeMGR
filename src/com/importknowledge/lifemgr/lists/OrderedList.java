@@ -95,8 +95,8 @@ public class OrderedList extends ListInstance{
         x += name.lineheight(g2)+Settings.linespace;
         g2.setColor(Color.black);
         Font font = g2.getFont();
-        if(correct.progress == 1 || pseudo){
-            g2.setColor(Color.gray);
+        if(correct.progress == 1 || pseudo) g2.setColor(Color.GRAY);
+        if(correct.progress == 1){
             Hashtable<TextAttribute, Object> attributes = new Hashtable<TextAttribute, Object>();
             attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
             g2.setFont(font.deriveFont(attributes)); 
@@ -110,17 +110,21 @@ public class OrderedList extends ListInstance{
         g2.setFont(font);
         if(correct == hovered || selected){
             x += Settings.linespace+((name.linewidth(g2)>Settings.buttondist)?name.linewidth(g2):Settings.buttondist);
+            g2.setColor(Color.RED);
+            g2.fillOval(x, 0, (int) name.lineheight(g2), (int) name.lineheight(g2));
+            x += name.lineheight(g2)/5;
             g2.setColor(Color.BLACK);
-            g2.fillOval(x, (int) (name.lineheight(g2)/6.0), (int) (name.lineheight(g2)/1.5), (int) (name.lineheight(g2)/1.5));
-            g2.setColor(Color.red);
-            g2.drawLine(x, name.lineheight(g2), (int) (2.0/3.0*name.lineheight(g2)+x), 0);
-            g2.drawLine(x, 0, (int) (2.0/3.0*name.lineheight(g2)+x), name.lineheight(g2));
+            g2.drawLine(x, name.lineheight(g2)*4/5, (int) (name.lineheight(g2)*3/5+x), name.lineheight(g2)/5);
+            g2.drawLine(x, name.lineheight(g2)/5, (int) (name.lineheight(g2)*3/5+x), name.lineheight(g2)*4/5);
+
             x += name.lineheight(g2);
-            g2.setColor(Color.black);
-            g2.fillOval(x, (int) (name.lineheight(g2)/6.0), (int) (name.lineheight(g2)/1.5), (int) (name.lineheight(g2)/1.5));
-            g2.setColor(Color.green);
-            g2.drawLine(x, name.lineheight(g2)/2, (int) (2.0/3.0*name.lineheight(g2)+x), name.lineheight(g2)/2);
-            g2.drawLine((int) (1.0/3.0*name.lineheight(g2)+x), 0, (int) (1.0/3.0*name.lineheight(g2)+x), name.lineheight(g2));
+            g2.setColor(Color.GREEN);
+            g2.fillOval(x, 0, (int) name.lineheight(g2), (int) name.lineheight(g2));
+            x += name.lineheight(g2)/5;
+            g2.setColor(Color.BLACK);
+            g2.drawLine(x, name.lineheight(g2)/2, (int) (name.lineheight(g2)*3/5+x), name.lineheight(g2)/2);
+            g2.drawLine((int) (name.lineheight(g2)*3/10+x), name.lineheight(g2)/5, (int) (name.lineheight(g2)*3/10+x), name.lineheight(g2)*4/5);
+
             x += name.lineheight(g2);
             g2.setColor(Color.gray);
             g2.drawString(correct.importance+"", x, name.lineheight(g2));
