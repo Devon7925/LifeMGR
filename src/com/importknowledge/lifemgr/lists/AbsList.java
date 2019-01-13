@@ -1,13 +1,23 @@
 package com.importknowledge.lifemgr.lists;
 
-import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public abstract class AbsList implements Serializable {
 	private static final long serialVersionUID = 1L;
     public ArrayList<AbsList> items;
     public AbsList holder;
+    boolean pseudo = false;
     int id = -1;
+
+    public AbsList(){}
+    public AbsList(AbsList list){
+        items = new ArrayList<>(list.items);
+        if(list.holder != null) holder = list.holder;
+        id = list.id;
+        pseudo = list.pseudo;
+    }
 
     abstract AbsList get(int index);
     abstract void clear();
@@ -20,10 +30,40 @@ public abstract class AbsList implements Serializable {
     abstract boolean addTo(AbsList l1, AbsList l2);
     abstract public void add(int i, AbsList e);
     abstract public void add(AbsList e);
+    public void addAll(ArrayList<AbsList> e) {
+        items.addAll(e);
+        items.forEach(n->n.holder = this);
+    }
     abstract AbsList getFirst();
     abstract AbsList getNext(AbsList l);
-    abstract AbsList upnext();
+    public AbsList next(){
+        if(items.size() > 0){
+            return get(0);
+        }else{
+            return upnext();
+        }
+    }
+    public AbsList upnext(){
+        if(holder != null){
+            if(holder.items.indexOf(this) < holder.items.size()-1){
+                return holder.get(holder.items.indexOf(this)+1);
+            }else{
+                return holder.upnext();
+            }
+        }else{
+            return getFirst();
+        }
+    }
     abstract boolean set(AbsList l1, AbsList l2);
-    abstract AbsList top();
-    abstract int countit();
+    abstract void update();
+    public AbsList top(){
+        if(holder == null)return this;
+        return holder.top();
+    }
+    public int countit() {
+        return items.stream().collect(Collectors.summingInt(n -> n.countit()))+1;
+    }
+    public int countit(int index) {
+        return items.subList(0, index).stream().collect(Collectors.summingInt(n -> n.countit()))+1;
+    }
 }

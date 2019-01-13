@@ -35,11 +35,11 @@ public class QuickPanel extends ListPanelType {
 	}
 	@Override
 	public void update() {
-		list = new QuickList(orig, this).prioitysort();
+		list = new QuickList(list.correct().prioitysort(), list.correct(), this);
 		super.update();
 	}
 	public void update(List l){
-		list = new QuickList(l, this);
+		list = new QuickList(l, l, this);
 		update();
 	}
 }

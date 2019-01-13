@@ -3,34 +3,42 @@ package com.importknowledge.lifemgr.lists;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import com.importknowledge.lifemgr.util.*;
 
-public class ListInstance extends List{
+import com.importknowledge.lifemgr.util.Settings;
+
+public class ListInstance extends AbsList{
     private static final long serialVersionUID = 1L;
+	public List orig;
     
     boolean ordered = true;
 
-    public  ListInstance(List list) {
+    public  ListInstance(AbsList list, List orig) {
         super(list);
-        items = new ArrayList<>(items.stream().map(n -> new ListInstance((List) n, this)).collect(Collectors.toList()));
+        this.orig = orig;
     }
 
-    public ListInstance(List list, ListInstance holder) {
-        this(list);
+    public  ListInstance(List list, List orig) {
+        super(list);
+        items = new ArrayList<>(list.items.stream().map(n->new ListInstance((List) n, orig)).collect(Collectors.toList()));
+        this.orig = orig;
+    }
+
+    public  ListInstance(AbsList list) {
+        super(list);
+    }
+
+    public  ListInstance(List list) {
+        this((AbsList) list, list);
+        items = new ArrayList<>(list.items.stream().map(n->new ListInstance((List) n)).collect(Collectors.toList()));
+    }
+
+    public ListInstance(AbsList list, ListInstance holder) {
+        this(list, holder.correct());
         this.holder = holder;
     }
 
     public ListInstance(ListInstance list) {
         super(list);
-    }
-    
-    public ListInstance(String name, List holder){
-        super(name, holder);
-    }
-
-    public void addto() {
-        ListInstance l = new ListInstance("", this);
-        add(0, l);
     }
 
     public void set(Graphics2D g2, int x, int y, List l) {
@@ -47,16 +55,6 @@ public class ListInstance extends List{
         }
     }
 
-    public ListInstance prioitysort(){
-        List orig = new List(this);
-        ListInstance l = new ListInstance(orig.name.getValue(), null);
-        for(int i = 0; i <= 9; i++){
-            l.addAll(new ArrayList<>(orig.find(i).stream().map(n -> new ListInstance(n)).collect(Collectors.toList())));
-        }
-        l.unorder();
-        return l;
-    }
-
     boolean equals(ListInstance list){
         return id == list.id;
     }
@@ -65,7 +63,7 @@ public class ListInstance extends List{
         int index = index2-1;
         if(index>=0){
             for(int i = 0; i < ((index2>items.size())?items.size():index2); i++){
-                index -= ((ListInstance) get(i)).countit();
+                index -= get(i).countit();
                 if(index < 0){
                     index = i;
                     break;
@@ -75,27 +73,105 @@ public class ListInstance extends List{
         return index+1;
     }
 
-    void unorder(){
+    ListInstance unorder(){
         ordered = false;
         for (AbsList l : items) {
             ((ListInstance) l).unorder();
         }
+        return this;
     }
-    
-    public List merge(List l){
-        if(ordered) return this;
-        List list = new List(l);
-        list.name = name;
-        list.progress = progress;
-        list.id = id;
-        for (int i = 0; i < items.size(); i++) {
-            List elem = (List) list.getFromID(get(i).id);
-            if(elem == null){
-                list.add(i, get(i++));
-            }else{
-                list.set(elem, ((ListInstance) get(i)).merge(elem));
-            }
+
+    @Override
+    AbsList get(int index) {
+        return items.get(index);
+    }
+
+    @Override
+	public
+    void clear() {
+        correct().clear();
+    }
+
+    @Override
+    void check(boolean b) {
+        correct().check(b);
+    }
+
+    @Override
+    AbsList get(AbsList l1) {
+        return correct().get(l1);
+    }
+
+    @Override
+    ListInstance getFromID(int id) {
+        if(this.id == id) return this;
+        return items.stream().map(n -> (ListInstance) n).map(n->n.getFromID(id)).filter(n->n!=null).findAny().orElse(null);
+    }
+
+    @Override
+    public void remove(AbsList e) {
+        correct().remove(((ListInstance) e).correct());
+        items.remove(e);
+        update();
+    }
+
+    @Override
+    boolean remFrom(AbsList l1, AbsList l2) {
+        return correct().remFrom(l1, l2);
+    }
+
+    @Override
+    boolean addTo(AbsList l1, int i, AbsList l2) {
+        return correct().addTo(l1, i, l2);
+    }
+
+    @Override
+    boolean addTo(AbsList l1, AbsList l2) {
+        return correct().addTo(l1, l2);
+    }
+
+    @Override
+    public void add(int i, AbsList e) {
+        correct().add(i, e);
+    }
+
+    @Override
+    public void add(AbsList e) {
+        correct().add(e);
+    }
+
+    @Override
+    AbsList getFirst() {
+        if(items.size() > 0){
+            return items.stream().map(n -> n.getFirst()).filter(n -> n != null).findFirst().orElse(null);
+        }else if(correct().progress == 0){
+            return this;
+        }else{
+            return null;
         }
-        return list;
+    }
+
+    @Override
+    AbsList getNext(AbsList l) {
+        if(this.id == l.id){
+            return this.next();
+        }else if(items.size() > 0){
+            return items.stream().map(n -> n.getNext(l)).filter(n -> n != null).findAny().orElse(null);
+        }
+        return null;
+    }
+
+    @Override
+    boolean set(AbsList l1, AbsList l2) {
+        return correct().set(l1, l2);
+    }
+
+    @Override
+	public
+    void update() {
+        correct().update();
+    }
+    public List correct(){
+        return ((List) orig.top().getFromID(id));
     }
 }

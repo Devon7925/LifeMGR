@@ -32,7 +32,7 @@ public class StatsPanel extends ListPanelType {
     public void keyReleased(KeyEvent e) {}
     
 	public void update(List l){
-		list = new StatsList(l);
+		list = new StatsList(l, l);
 		update();
 	}
 

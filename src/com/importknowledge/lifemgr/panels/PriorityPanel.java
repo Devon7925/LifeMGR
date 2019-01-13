@@ -32,7 +32,7 @@ public class PriorityPanel extends ListPanel implements MouseInputListener, Mous
 	}
 	@Override
 	public void update() {
-		list = new OrderedList(orig).prioitysort();
+		list = new OrderedList(list.correct().prioitysort(), list.correct());
 		super.update();
 	}
 }

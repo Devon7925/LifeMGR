@@ -12,10 +12,8 @@ import com.importknowledge.lifemgr.lists.*;
 abstract public class ListPanelType extends JPanel implements KeyListener{
 	private static final long serialVersionUID = 1L;
 	public ListInstance list;
-	public List orig;
 	public JButton tab;
 	ListPanelType(List list, JFrame frame){
-		orig = list;
 		update(list);
 		frame.addKeyListener(this);
 		setBackground(Color.WHITE);
@@ -33,7 +31,7 @@ abstract public class ListPanelType extends JPanel implements KeyListener{
 		list.update();
 	}
 	public void update(List l){
-		list = new ListInstance(l);
+		list = new ListInstance(l, l);
 		update();
 	}
 }

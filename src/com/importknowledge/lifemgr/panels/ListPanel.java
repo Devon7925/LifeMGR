@@ -37,6 +37,7 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 		addMouseWheelListener(this);
 		this.frame = frame;
 		this.path = path;
+		update(list);
 	}
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -59,16 +60,18 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 	@Override
 	public void mousePressed(MouseEvent e) {
 		click2 = click = e.getPoint();
-		selectdrag = ((OrderedList) list).get(g2, (int) click.getX(), (int) click.getY()-(int) scroll).equals(((OrderedList) list).getfocus());
+		OrderedList clicked = ((OrderedList) list).get(g2, (int) click.getX(), (int) click.getY()-(int) scroll);
+		if(clicked != null) selectdrag = clicked.equals(((OrderedList) list).getfocus());
 	}
 	public void mouseReleased(MouseEvent e) {
 		if(Math.abs(click.x-e.getX())<5 && Math.abs(click.y-e.getY())<5){
-			((OrderedList) list).get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll).click(g2, e.getX());
+			OrderedList clicked = ((OrderedList) list).get(g2, e.getX()-Settings.indent, e.getY()-Settings.indent-(int) scroll);
+			if(clicked != null) clicked.click(g2, e.getX());
 		}else if(!selectdrag){
 			scroll -= click2.y-e.getY();
 		}
 		list.update();
-		if(scroll<-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.name.lineheight(g2))) scroll = -Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.name.lineheight(g2));
+		if(scroll<-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.correct().name.lineheight(g2))) scroll = -Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.correct().name.lineheight(g2));
 		repaint();
 	}
 	@Override
@@ -80,39 +83,39 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(selectdrag){
-			List temp = ((OrderedList) list).getfocus();
-			List temp2 = ((OrderedList) list).get(g2, (int) e.getX(), (int) e.getY()-(int) scroll);
+			List temp = ((OrderedList) list).getfocus().correct();
+			List temp2 = ((OrderedList) list).get(g2, (int) e.getX(), (int) e.getY()-(int) scroll).correct();
 			if(temp == temp2 && e.getX()-click.getX() > Settings.indent){
 				int i = temp.holder.items.indexOf(temp);
 				if(i > 0){
 					click.x = e.getX();
-					list.remFrom(temp.holder, temp);
-					list.addTo(temp.holder.items.get(i-1), temp);
+					list.correct().remFrom(temp.holder, temp);
+					list.correct().addTo(temp.holder.items.get(i-1), temp);
 				}
 			}else if(temp == temp2 && click.getX()-e.getX() > Settings.indent){
 				if(temp.holder.holder != null){
 					int i = temp.holder.holder.items.indexOf(temp.holder);
 					click.x = e.getX();
-					list.remFrom(temp.holder, temp);
-					list.addTo(temp.holder.holder, i+1, temp);
+					list.correct().remFrom(temp.holder, temp);
+					list.correct().addTo(temp.holder.holder, i+1, temp);
 				}
 			}else if(temp.level() == temp2.level() && temp.holder == temp2.holder){
 				if(click2.getY() < e.getY()){
-					list.set(temp2, temp);
-					list.set(((OrderedList) list).getfocus(), temp2);
+					list.correct().set(temp2, temp);
+					list.correct().set(((OrderedList) list).getfocus(), temp2);
 				}else{
-					list.set(((OrderedList) list).getfocus(), temp2);
-					list.set(temp2, temp);
+					list.correct().set(((OrderedList) list).getfocus(), temp2);
+					list.correct().set(temp2, temp);
 				}
 			}else if(temp.level() > temp2.level() && temp.level() > 1){
 				if(click2.getY() > e.getY()){
-					List foc = ((OrderedList) list).getfocus();
-					list.remFrom(foc.holder, foc);
-					list.addTo(foc.holder.holder, foc.holder.holder.items.indexOf(foc.holder), foc);
+					List foc = ((OrderedList) list).getfocus().correct();
+					list.correct().remFrom(foc.holder, foc);
+					list.correct().addTo(foc.holder.holder, foc.holder.holder.items.indexOf(foc.holder), foc);
 				}else{
-					List foc = ((OrderedList) list).getfocus();
-					list.remFrom(foc.holder, foc);
-					list.addTo(foc.holder.holder, foc.holder.holder.items.indexOf(foc.holder)+1, foc);
+					List foc = ((OrderedList) list).getfocus().correct();
+					list.correct().remFrom(foc.holder, foc);
+					list.correct().addTo(foc.holder.holder, foc.holder.holder.items.indexOf(foc.holder)+1, foc);
 				}
 			}
 		}else if(click2.getY()-e.getY()>0 || scroll<0) scroll -= click2.getY()-e.getY();
@@ -128,7 +131,7 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.name.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();
+		if((e.getWheelRotation()>0 && scroll>-Settings.line+getHeight()+(-list.countit())*(1.0*Settings.line+list.correct().name.lineheight(g2))) || (scroll<0 && e.getWheelRotation()<0))scroll -= Settings.scroll*e.getWheelRotation();
 		repaint();
 	}
 	//endregion
@@ -138,10 +141,11 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		OrderedList foc = ((OrderedList) list).getfocus();
+		OrderedList focuus = ((OrderedList) list).getfocus();
+		List foc = focuus.correct();
 		int key = e.getKeyCode();
 		if(key == KeyEvent.VK_F1){
-			list.clear();
+			list.correct().clear();
 		}else if(key == KeyEvent.VK_F2){
 			if(!foc.persistant){
 				foc.setpersistant();
@@ -152,70 +156,75 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 			((OrderedList) list).resetfocus();
 		}else if(foc != null){
 			if(e.isControlDown()){
+				ListInstance hoold = (ListInstance) focuus.holder;
 				List hold = (List) foc.holder;
-				if(key == KeyEvent.VK_RIGHT){
+				if(hold == null){}//donothing
+				else if(key == KeyEvent.VK_RIGHT){
 					int i = hold.items.indexOf(foc)-1;
 					if(i < hold.items.size() && i >= 0){
-						hold.remove(foc);
-						hold.items.get(i).add(foc);
+						hoold.remove(focuus);
+						hoold.items.get(i).add(foc);
 					}
 				}else if(key == KeyEvent.VK_LEFT){
 					if(hold.holder != null){
-						hold.remove(foc);
-						hold.holder.add(hold.holder.items.indexOf(hold)+1, foc);
+						hoold.remove(focuus);
+						hoold.holder.add(hold.holder.items.indexOf(hold)+1, foc);
 					}
-				}else if(key == KeyEvent.VK_UP){
-					if(hold.items.indexOf(foc)-1 >= 0)Collections.swap(hold.items, hold.items.indexOf(foc), hold.items.indexOf(foc)-1);
-				}else if(key == KeyEvent.VK_DOWN) {
-					if (hold.items.indexOf(foc) + 1 < hold.items.size())
-						Collections.swap(hold.items, hold.items.indexOf(foc),
-								hold.items.indexOf(foc) + 1);
+				}else if(key == KeyEvent.VK_UP && hold.items.indexOf(foc)-1 >= 0){
+					Collections.swap(hold.items, hold.items.indexOf(foc), hold.items.indexOf(foc)-1);
+					update(list.correct());
+				}else if(key == KeyEvent.VK_DOWN && hold.items.indexOf(foc)+1 < hold.items.size()){
+					Collections.swap(hold.items, hold.items.indexOf(foc), hold.items.indexOf(foc)+1);
+					update(list.correct());
 				}else if(key == KeyEvent.VK_V) {
 					try {
 						String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
 							.getData(DataFlavor.stringFlavor);
-						if(foc.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+data);
-						else foc.name.setValue(foc.name.getValue().substring(0, foc.cursor)+data+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
+						if(focuus.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+data);
+						else foc.name.setValue(foc.name.getValue().substring(0, focuus.cursor)+data+foc.name.getValue().substring(focuus.cursor, foc.name.getValue().length()));
 						int a = (1+foc.level())*Settings.indent+foc.name.linewidth(g2)+Settings.linespace+5*foc.name.lineheight(g2);
 						frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
-						foc.cursor+=data.length();
+						focuus.cursor+=data.length();
 					} catch (HeadlessException | UnsupportedFlavorException | IOException e1) {
 						e1.printStackTrace();
 					} 
 				}else if(key == KeyEvent.VK_ENTER){
-						OrderedList l = new OrderedList("", foc);
-						((OrderedList) list).setfocus(l);
-						foc.add(0, l);
+						List l = new List("", (List) foc);
+						focuus.add(0, l);
+						((OrderedList) foc.instance(list)).setfocus((OrderedList) l.instance(list));
 				}else if(KeyEvent.getKeyText(key).matches("\\d")){
-					foc.setpriority(Integer.parseInt(KeyEvent.getKeyText(key)));
+					int newprioty = Integer.parseInt(KeyEvent.getKeyText(key));
+					if(newprioty == 0) newprioty = 10;
+					foc.setpriority(newprioty);
 				}
 			}else if(key == KeyEvent.VK_UP){
-				if(foc.holder != null) ((OrderedList) foc.holder).setfocus((OrderedList) foc.prev());
+				if(foc.holder != null) focuus.setfocus((OrderedList) ((List) foc.prev()).instance(list));
 			}else if(key == KeyEvent.VK_DOWN){
-				if(foc.holder == null) foc.setfocus((OrderedList) foc.next());
-				else ((OrderedList) foc.holder).setfocus((OrderedList) foc.next());
-			}else if(key == KeyEvent.VK_RIGHT && foc.cursor < foc.name.getValue().length()){
-				foc.cursor++;
-			}else if(key == KeyEvent.VK_LEFT && foc.cursor > 0){
-				foc.cursor--;
+				if(foc.holder == null) focuus.setfocus((OrderedList) ((List) foc.next()).instance(list));
+				else ((OrderedList) focuus.holder).setfocus((OrderedList) ((List) foc.next()).instance(list));
+			}else if(key == KeyEvent.VK_RIGHT && focuus.cursor < foc.name.getValue().length()){
+				focuus.cursor++;
+			}else if(key == KeyEvent.VK_LEFT && focuus.cursor > 0){
+				focuus.cursor--;
 			}else if(key == KeyEvent.VK_ENTER && foc.holder != null){
-				OrderedList l = new OrderedList("", (List) foc.holder);
-				((OrderedList) list).setfocus(l);
-				((List) foc.holder).add(((List) foc.holder).items.indexOf(foc)+1, l);
+				List l = new List("", (List) foc.holder);
+				((List) foc.holder).add(foc.holder.items.indexOf(foc)+1, l);
 				scroll -= foc.name.lineheight(g2)+Settings.line;
-			}else if(key == KeyEvent.VK_BACK_SPACE && foc.cursor != 0){
-				foc.name.setValue(foc.name.getValue().substring(0, foc.cursor-1)+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
-				foc.cursor--;
+				update(list.correct());
+				((OrderedList) ((List) foc.holder).instance(list)).setfocus((OrderedList) l.instance(list));
+			}else if(key == KeyEvent.VK_BACK_SPACE && focuus.cursor != 0){
+				foc.name.setValue(foc.name.getValue().substring(0, focuus.cursor-1)+foc.name.getValue().substring(focuus.cursor, foc.name.getValue().length()));
+				focuus.cursor--;
 			}else if(isPrintableChar(e.getKeyChar())){
-				if(foc.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+e.getKeyChar());
-				else foc.name.setValue(foc.name.getValue().substring(0, foc.cursor)+e.getKeyChar()+foc.name.getValue().substring(foc.cursor, foc.name.getValue().length()));
+				if(focuus.cursor==foc.name.getValue().length()) foc.name.setValue(foc.name.getValue()+e.getKeyChar());
+				else foc.name.setValue(foc.name.getValue().substring(0, focuus.cursor)+e.getKeyChar()+foc.name.getValue().substring(focuus.cursor, foc.name.getValue().length()));
 				int a = (1+foc.level())*Settings.indent+foc.name.linewidth(g2)+Settings.linespace+5*foc.name.lineheight(g2);
 				frame.setSize(frame.getWidth()>a?frame.getWidth():a, frame.getHeight());
-				foc.cursor++;
+				focuus.cursor++;
 			}
 		}
-		list.update();
-		Main.serializeAddress(new List(list), path);
+		update();
+		Main.serializeAddress(list.correct(), path);
 		repaint();
 	}
 	@Override
@@ -230,7 +239,7 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
     }
 	//endregion
 	public void update(List l){
-		list = new OrderedList(l);
+		list = new OrderedList(l, l);
 		update();
 	}
 }

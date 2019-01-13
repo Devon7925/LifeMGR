@@ -31,8 +31,8 @@ public class Main extends JFrame implements ActionListener{
 	JSplitPane pane;
 	QuickPanel quickpanel;
 	static JPanel tabs;
-	String inpath = System.getProperty("user.home")+"/Desktop/yay.list";
-	String outpath = System.getProperty("user.home")+"/Desktop/yay.list";
+	String inpath = System.getProperty("user.home")+"/Desktop/testyay.list";
+	String outpath = System.getProperty("user.home")+"/Desktop/testyay.list";
 
 	public Main() {
 		list = new List("ToDo", null);
@@ -61,7 +61,7 @@ public class Main extends JFrame implements ActionListener{
             @Override
             public void windowClosing(WindowEvent e)
             {
-				serializeAddress(new List(((ListPanelType) pane.getBottomComponent()).list.merge(list)), outpath);
+				serializeAddress(((ListPanelType) pane.getBottomComponent()).list.correct(), outpath);
                 e.getWindow().dispose();
             }
         });
@@ -103,13 +103,11 @@ public class Main extends JFrame implements ActionListener{
 		ListPanelType bottom = ((ListPanelType) pane.getBottomComponent());
 		bottom.tab.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 0, Color.BLACK));
 		bottom.tab.setBackground(new Color(240, 240, 240));
-		list = new List(bottom.list.merge(list));
 		bottom = ((JButab) e.getSource()).panel;
 		pane.setBottomComponent(bottom);
 		bottom.tab.setBackground(Color.WHITE);
 		bottom.grabFocus();
 		bottom.tab.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
-		bottom.orig = list;
 		bottom.update(list);
 		bottom.update();
 	}

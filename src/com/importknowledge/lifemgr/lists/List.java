@@ -12,13 +12,13 @@ public class List extends AbsList{
     public MutableString name = new MutableString("");
     
     double progress;
-    int importance;
+    int importance = 1;
     
     public boolean persistant = false;
 
     public List(String name, List holder){
         this.name = new MutableString(name);
-        this.holder = holder;
+        if(holder != null) this.holder = holder;
         progress = 0;
         id = ID.getId();
         if(holder != null)
@@ -50,7 +50,7 @@ public class List extends AbsList{
         if(id == -1) id = ID.getId();
         if(items.size() == 0) return;
         progress = 0;
-        items.stream().map(n -> (List) n).forEach(n->n.update());
+        items.forEach(n->n.update());
         progress = items.stream().map(n -> (List) n).collect(Collectors.averagingDouble(n -> n.progress));
         if(items.size() == 0) progress = 1;
     }
@@ -94,10 +94,6 @@ public class List extends AbsList{
         }else {
             return items.stream().anyMatch(n->n.set(l1, l2));
         }
-    }
-    public void addAll(ArrayList<List> e) {
-        items.addAll(e);
-        items.forEach(n->n.holder = this);
     }
     public void add(AbsList e) {
         items.add(e);
@@ -169,24 +165,6 @@ public class List extends AbsList{
         }
         return null;
     }
-    public AbsList next(){
-        if(items.size() > 0){
-            return get(0);
-        }else{
-            return upnext();
-        }
-    }
-    public AbsList upnext(){
-        if(holder != null){
-            if(holder.items.indexOf(this) < holder.items.size()-1){
-                return holder.get(holder.items.indexOf(this)+1);
-            }else{
-                return holder.upnext();
-            }
-        }else{
-            return getFirst();
-        }
-    }
     public void setpriority(int prioty){
         importance = prioty;
         items.forEach(n->((List) n).setpriority(prioty));
@@ -194,18 +172,20 @@ public class List extends AbsList{
     public ArrayList<List> find(int prioty){
         List list = new List(this);
         return (ArrayList<List>) Stream.concat(
-            list.items.stream().map(n -> (List) n).filter(n -> n.importance == prioty).map(n->{n.items = new ArrayList<>(); n.find(prioty).forEach(n.items::add); return n;}),
-            items.stream().map(n -> (List) n).filter(e -> e.importance != prioty).filter(e -> e.find(prioty).size() != 0).map(n->{n.items = new ArrayList<>(); n.find(prioty).forEach(n.items::add); n.importance = -prioty; return n;})
+            list.items.stream().map(n -> (List) n).filter(n -> n.importance == prioty).map(n->{n.items = new ArrayList<>(n.find(prioty)); return n;}),
+            list.items.stream().map(n -> (List) n).filter(n -> n.importance != prioty).filter(e -> e.find(prioty).size() != 0).map(n->{n.items = new ArrayList<>(n.find(prioty)); n.pseudo = true; return n;})
         ).collect(Collectors.toList());
     }
-    public AbsList top(){
-        if(holder == null)return this;
-        return holder.top();
+    public ListInstance prioitysort(){
+        List l = new List(this);
+        l.items = new ArrayList<>();
+        for(int i = 1; i <= 10; i++){
+            l.addAll(new ArrayList<>(this.find(i)));
+        }
+        return new ListInstance(l, this).unorder();
     }
-    public int countit() {
-        return items.stream().collect(Collectors.summingInt(n -> n.countit()))+1;
-    }
-    public int countit(int index) {
-        return items.subList(0, index).stream().collect(Collectors.summingInt(n -> n.countit()))+1;
+
+    public ListInstance instance(ListInstance top){
+        return top.getFromID(id);
     }
 }

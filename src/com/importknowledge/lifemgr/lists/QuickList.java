@@ -19,24 +19,19 @@ public class QuickList extends ListInstance implements Runnable{
     QuickPanel panel;
 
 
-    public  QuickList(List list, QuickPanel panel) {
-        super(list);
-        items = new ArrayList<>(items.stream().map(n -> new ListInstance((List) n, this)).collect(Collectors.toList()));
+    public QuickList(AbsList list, List orig, QuickPanel panel) {
+        super(list, orig);
+        items = new ArrayList<>(items.stream().map(n -> n instanceof List?new ListInstance((List) n, this):n).collect(Collectors.toList()));
         this.panel = panel;
     }
 
-    public QuickList(List list, QuickList holder, QuickPanel panel) {
-        this(list, panel);
-        this.holder = holder;
+    public QuickList(AbsList list, QuickList holder, QuickPanel panel) {
+        super(list, holder);
+        this.panel = panel;
     }
 
     public QuickList(QuickList list) {
         super(list);
-    }
-    
-    public QuickList(String name, List holder, QuickPanel panel){
-        super(name, holder);
-        this.panel = panel;
     }
 
     public void draw(Graphics2D g2, int w, int h){
@@ -100,7 +95,8 @@ public class QuickList extends ListInstance implements Runnable{
         update();
         new Thread(this).start();
         oldactive = active;
-        active = (List) getFirst();
+		ListInstance temp = ((ListInstance) getFirst());
+		if(temp != null) active = temp.correct();
     }
 
     public void skip(){
@@ -111,7 +107,7 @@ public class QuickList extends ListInstance implements Runnable{
         do{
             if(active != null) active = 
                     (List) active.next();
-            else active = this;
+            else active = correct();
         }while(active.getFirst() == null);
         if(active != null) active = (List) active.getFirst();
     }
@@ -131,17 +127,7 @@ public class QuickList extends ListInstance implements Runnable{
 	}
 
     public void update(){
-        super.update();
-		if(active == null) oldactive = active = (List) getFirst();
-    }
-
-    public QuickList prioitysort(){
-        List orig = new List(this);
-        QuickList l = new QuickList(orig.name.getValue(), null, panel);
-        for(int i = 0; i <= 9; i++){
-            l.addAll(new ArrayList<>(orig.find(i).stream().map(n -> new ListInstance(n)).collect(Collectors.toList())));
-        }
-        l.unorder();
-        return l;
+		super.update();
+		if(active == null && correct().progress != 1) oldactive = active = (List) ((ListInstance) getFirst()).correct();
     }
 }

@@ -9,33 +9,27 @@ import java.util.stream.Collectors;
 public class StatsList extends ListInstance{
     private static final long serialVersionUID = 1L;
 
-    public StatsList(List list) {
-        super(list);
+    public StatsList(AbsList list, List orig) {
+        super(list, orig);
         items = new ArrayList<>(items.stream().map(n -> new StatsList((List) n, this)).collect(Collectors.toList()));
     }
 
     public StatsList(List list, StatsList holder) {
-        this(list);
-        this.holder = holder;
+        super(list, holder);
     }
 
     public StatsList(StatsList list) {
         super(list);
     }
-    
-    public StatsList(String name, List holder){
-        super(name, holder);
-        unorder();
-    }
 
     public void draw(Graphics2D g2, int w, int h){
         int index = 0;
-        for(int i = 0; i <= 9; i++){
-            if(find(i).size() != 0){
+        for(int i = 1; i <= 10; i++){
+            if(correct().find(i).size() != 0){
                 g2.setColor(Color.BLUE);
                 g2.fillOval(index%3*w/3, index/3*h/3, w/3, h/3);
                 g2.setColor(Color.GREEN);
-                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (-360*find(i).stream().collect(Collectors.averagingDouble(n->{n.update(); return n.progress;}))));
+                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (-360*correct().find(i).stream().collect(Collectors.averagingDouble(n->{n.update(); return n.progress;}))));
                 Font f = g2.getFont();
                 g2.setFont(new Font("Ubuntu", Font.PLAIN, 150));
                 g2.setColor(Color.BLACK);
