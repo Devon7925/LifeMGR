@@ -31,8 +31,8 @@ public class Main extends JFrame implements ActionListener{
 	JSplitPane pane;
 	QuickPanel quickpanel;
 	static JPanel tabs;
-	String inpath = System.getProperty("user.home")+"/Desktop/testyay.list";
-	String outpath = System.getProperty("user.home")+"/Desktop/testyay.list";
+	String inpath = System.getProperty("user.home")+"/Desktop/yay.list";
+	String outpath = System.getProperty("user.home")+"/Desktop/yay.list";
 
 	public Main() {
 		list = new List("ToDo", null);
@@ -44,9 +44,9 @@ public class Main extends JFrame implements ActionListener{
 		tabs = new JPanel();
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
 		new JButab("List"  , this, new     ListPanel(list, this, outpath), tabs);
-		new JButab("Quick" , this, new    QuickPanel(list, this      ), tabs);
+		new JButab("Quick" , this, new    QuickPanel(list, this         ), tabs);
 		new JButab("Sorted", this, new PriorityPanel(list, this, outpath), tabs);
-		new JButab("Stats" , this, new    StatsPanel(list, this      ), tabs);
+		new JButab("Stats" , this, new    StatsPanel(list, this         ), tabs);
 		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		
 		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, ((JButab) tabs.getComponent(0)).panel);
 		pane.setDividerLocation(getHeight()/20);
