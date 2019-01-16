@@ -19,23 +19,26 @@ public abstract class AbsList implements Serializable {
         pseudo = list.pseudo;
     }
 
-    abstract AbsList get(int index);
     abstract void clear();
     abstract void check(boolean b);
     abstract AbsList get(AbsList l1);
     abstract AbsList getFromID(int id);
     abstract void remove(AbsList e);
-    abstract boolean remFrom(AbsList l1, AbsList l2);
-    abstract boolean addTo(AbsList l1, int i, AbsList l2);
-    abstract boolean addTo(AbsList l1, AbsList l2);
     abstract public void add(int i, AbsList e);
-    abstract public void add(AbsList e);
+    abstract public void add(AbsList e); 
     public void addAll(ArrayList<AbsList> e) {
         items.addAll(e);
         items.forEach(n->n.holder = this);
     }
     abstract AbsList getFirst();
     abstract AbsList getNext(AbsList l);
+    public AbsList child(){
+        if(items.size() > 0){
+            return items.get(0).child();
+        }else{
+            return this;
+        }
+    }
     public AbsList next(){
         if(items.size() > 0){
             return get(0);
@@ -65,5 +68,15 @@ public abstract class AbsList implements Serializable {
     }
     public int countit(int index) {
         return items.subList(0, index).stream().collect(Collectors.summingInt(n -> n.countit()))+1;
+    }
+
+    boolean equals(AbsList list){
+        return id == list.id;
+    }
+    public int level(){
+        return holder == null?0:(holder.level()+1);
+    }
+    public AbsList get(int index){
+        return items.get(index);
     }
 }

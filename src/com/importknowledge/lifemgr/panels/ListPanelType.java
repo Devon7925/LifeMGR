@@ -7,18 +7,23 @@ import java.awt.event.KeyListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import com.importknowledge.lifemgr.lists.*;
+
+import com.importknowledge.lifemgr.lists.List;
+import com.importknowledge.lifemgr.lists.ListInstance;
 
 abstract public class ListPanelType extends JPanel implements KeyListener{
 	private static final long serialVersionUID = 1L;
 	public ListInstance list;
 	public JButton tab;
-	ListPanelType(List list, JFrame frame){
+	String path;
+
+	ListPanelType(List list, JFrame frame, String path){
 		update(list);
 		frame.addKeyListener(this);
 		setBackground(Color.WHITE);
 		setFocusTraversalKeysEnabled(false);
 		addKeyListener(this);
+		this.path = path;
 	}
 	@Override
 	public abstract void keyTyped(KeyEvent e);

@@ -11,9 +11,9 @@ import javax.swing.event.MouseInputListener;
 import com.importknowledge.lifemgr.lists.*;
 import com.importknowledge.lifemgr.util.*;
 
-public class PriorityPanel extends ListPanel implements MouseInputListener, MouseWheelListener {
+public class SortedPanel extends ListPanel implements MouseInputListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
-	public PriorityPanel(List list, JFrame frame, String path){
+	public SortedPanel(List list, JFrame frame, String path){
 		super(list, frame, path);
 	}
 	@Override
@@ -25,7 +25,7 @@ public class PriorityPanel extends ListPanel implements MouseInputListener, Mous
         g2.translate(0, scroll);
 		((OrderedList) list).draw(g2, 0,
 			new Point(Settings.indent, Settings.indent),
-			((OrderedList) list).hover(g2, click2.x, click2.y-(int) scroll),
+			((OrderedList) list).hover(g2, lastpos.x, lastpos.y-(int) scroll),
 			true
 		);
         g2.translate(0, -scroll);

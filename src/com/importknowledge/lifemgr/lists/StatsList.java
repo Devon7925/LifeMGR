@@ -29,7 +29,7 @@ public class StatsList extends ListInstance{
                 g2.setColor(Color.BLUE);
                 g2.fillOval(index%3*w/3, index/3*h/3, w/3, h/3);
                 g2.setColor(Color.GREEN);
-                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (-360*correct().find(i).stream().collect(Collectors.averagingDouble(n->{n.update(); return n.progress;}))));
+                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (-360*correct().find(i).stream().peek(n->n.update()).collect(Collectors.averagingDouble(n->n.progress))));
                 Font f = g2.getFont();
                 g2.setFont(new Font("Ubuntu", Font.PLAIN, 150));
                 g2.setColor(Color.BLACK);

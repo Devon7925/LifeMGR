@@ -6,7 +6,7 @@ import java.io.File;
 public class Settings {
 	private static Font extracted() {
         try{
-        return Font.createFont(Font.TRUETYPE_FONT, new File("C:/Users/Public/eclipse-workspace/LifeMGR/times.ttf"));
+            return Font.createFont(Font.TRUETYPE_FONT, new File("C:/Users/Public/eclipse-workspace/LifeMGR/times.ttf"));
         }catch(Exception e){
             e.printStackTrace();
         }

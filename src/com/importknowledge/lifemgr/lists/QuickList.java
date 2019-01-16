@@ -37,55 +37,36 @@ public class QuickList extends ListInstance implements Runnable{
     public void draw(Graphics2D g2, int w, int h){
 		Drawer d = new Drawer(new Rectangle2D.Double(0, 0, w, h), g2);
 		d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-		if(active != null) {
-			double len = active.name.getValue().length()*0.01;
+		render(   active, d, 1.5, ((List) oldactive.holder).progress);
+		render(oldactive, d, 0.5, oldprogress+(((List) oldactive.holder).progress-oldprogress)*anim);
+	}
+	
+	void render(List todraw, Drawer d, double shift, double val){
+		if(todraw != null) {
+			double len = todraw.name.getValue().length()*0.01;
 			d.setColor(new Color(100, 100, 255));
-			d.drawEllipCent(new Rectangle2D.Double(1.5-anim, 0.5, (0.5+len), 0.5));
-			d.setColor(Color.white);
-			if(active.persistant) d.drawEllipCent(new Rectangle2D.Double(1.5-anim, 0.35, 0.05, 0.05));
-			d.setColor(Color.black);
-			d.drawString(active.name.getValue(), 1.5-anim, 0.5);
-			d.setColor(Color.black);
-			if(active.holder != null){
-				d.setFont(new Font("TimesRoman", Font.PLAIN, 25));
-				double x = (oldactive.holder == active.holder)?-0.5:1.5-anim;
-				List hold = (List) active.holder;
-				len = hold.name.getValue().length()*0.01;
-				d.setColor(new Color(100, 100, 255));
-				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, 0.25+len, 0.1));
-				d.setColor(Color.GREEN);
-				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, hold.progress*(0.25+len), hold.progress*0.1));
-				d.setColor(Color.black);
-				d.drawString(hold.name.getValue(), x, 0.15);
-				d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-			}
-		}
-		if(oldactive != null) {
-			double len = oldactive.name.getValue().length()*0.01;
-			d.setColor(new Color(100, 100, 255));
-			d.drawEllipCent(new Rectangle2D.Double(0.5-anim, 0.5, 0.5+len, 0.5));
+			d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.5, 0.5+len, 0.5));
 			d.setColor(Color.green);
-			if(oldactive.progress > 0.5) d.drawEllipCent(new Rectangle2D.Double(0.5-anim, 0.5, 1.2*anim*0.5, 1.2*anim*0.5));
+			if(todraw.progress > 0.5) d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.5, 1.2*anim*0.5, 1.2*anim*0.5));
 			d.setColor(Color.white);
-			if(oldactive.persistant) d.drawEllipCent(new Rectangle2D.Double(0.5-anim, 0.35, 0.05, 0.05));
+			if(todraw.persistant) d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.35, 0.05, 0.05));
 			d.setColor(Color.black);
-			d.drawString(oldactive.name.getValue(), 0.5-anim, 0.5);
-			if(oldactive.holder != null){
+			d.drawString(todraw.name.getValue(), shift-anim, 0.5);
+			if(todraw.holder != null){
 				d.setFont(new Font("TimesRoman", Font.PLAIN, 25));
-				double x = (oldactive.holder == active.holder)?0.5:0.5-anim;
-				List hold = (List) oldactive.holder;
+				double x = (oldactive.holder == active.holder)?0.5:shift-anim;
+				List hold = (List) todraw.holder;
 				len = hold.name.getValue().length()*0.01;
 				d.setColor(new Color(100, 100, 255));
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, 0.25+len, 0.1));
 				d.setColor(Color.GREEN);
-				double val = oldprogress+(hold.progress-oldprogress)*anim;
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, val*(0.25+len), val*0.1));
 				d.setColor(Color.black);
 				d.drawString(hold.name.getValue(), x, 0.15);
 				d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			}
 		}
-    }
+	}
 
     public void complete(){
         if(active != null) {

@@ -11,8 +11,8 @@ public class StatsPanel extends ListPanelType {
 
     private static final long serialVersionUID = 1L;
 
-    public StatsPanel(List list, JFrame frame){
-		super(list, frame);
+    public StatsPanel(List list, JFrame frame, String path){
+		  super(list, frame, path);
     }
 
     @Override

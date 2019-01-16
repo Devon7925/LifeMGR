@@ -19,7 +19,8 @@ public class ListInstance extends AbsList{
 
     public  ListInstance(List list, List orig) {
         super(list);
-        items = new ArrayList<>(list.items.stream().map(n->new ListInstance((List) n, orig)).collect(Collectors.toList()));
+        items = new ArrayList<>(list.items.size());
+        list.items.stream().map(n -> new ListInstance((List) n, orig)).forEach(items::add);
         this.orig = orig;
     }
 
@@ -55,14 +56,10 @@ public class ListInstance extends AbsList{
         }
     }
 
-    boolean equals(ListInstance list){
-        return id == list.id;
-    }
-
     public int index(int index2){
         int index = index2-1;
         if(index>=0){
-            for(int i = 0; i < ((index2>items.size())?items.size():index2); i++){
+            for(int i = 0; i < Math.min(index2, items.size()); i++){
                 index -= get(i).countit();
                 if(index < 0){
                     index = i;
@@ -75,15 +72,8 @@ public class ListInstance extends AbsList{
 
     ListInstance unorder(){
         ordered = false;
-        for (AbsList l : items) {
-            ((ListInstance) l).unorder();
-        }
+        for (AbsList l : items) ((ListInstance) l).unorder();
         return this;
-    }
-
-    @Override
-    AbsList get(int index) {
-        return items.get(index);
     }
 
     @Override
@@ -105,7 +95,7 @@ public class ListInstance extends AbsList{
     @Override
     ListInstance getFromID(int id) {
         if(this.id == id) return this;
-        return items.stream().map(n -> (ListInstance) n).map(n->n.getFromID(id)).filter(n->n!=null).findAny().orElse(null);
+        return items.stream().map(n->(ListInstance) n).map(n->n.getFromID(id)).filter(n->n!=null).findAny().orElse(null);
     }
 
     @Override
@@ -113,21 +103,6 @@ public class ListInstance extends AbsList{
         correct().remove(((ListInstance) e).correct());
         items.remove(e);
         update();
-    }
-
-    @Override
-    boolean remFrom(AbsList l1, AbsList l2) {
-        return correct().remFrom(l1, l2);
-    }
-
-    @Override
-    boolean addTo(AbsList l1, int i, AbsList l2) {
-        return correct().addTo(l1, i, l2);
-    }
-
-    @Override
-    boolean addTo(AbsList l1, AbsList l2) {
-        return correct().addTo(l1, l2);
     }
 
     @Override

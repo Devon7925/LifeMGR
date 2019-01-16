@@ -16,13 +16,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import com.importknowledge.lifemgr.lists.*;
-import com.importknowledge.lifemgr.panels.*;
+
+import com.importknowledge.lifemgr.lists.List;
+import com.importknowledge.lifemgr.panels.ListPanel;
+import com.importknowledge.lifemgr.panels.ListPanelType;
+import com.importknowledge.lifemgr.panels.SortedPanel;
+import com.importknowledge.lifemgr.panels.QuickPanel;
+import com.importknowledge.lifemgr.panels.StatsPanel;
 
 
 public class Main extends JFrame implements ActionListener{
@@ -43,10 +49,13 @@ public class Main extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		tabs = new JPanel();
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
-		new JButab("List"  , this, new     ListPanel(list, this, outpath), tabs);
-		new JButab("Quick" , this, new    QuickPanel(list, this         ), tabs);
-		new JButab("Sorted", this, new PriorityPanel(list, this, outpath), tabs);
-		new JButab("Stats" , this, new    StatsPanel(list, this         ), tabs);
+		ArrayList<ListPanelType> panels = new ArrayList<>();
+		panels.add(new     ListPanel(list, this, outpath));
+		panels.add(new    QuickPanel(list, this, outpath));
+		panels.add(new SortedPanel(list, this, outpath));
+		panels.add(new    StatsPanel(list, this, outpath));
+		for(ListPanelType panel : panels)
+			new JButab(panel.getClass().getName().replaceAll(".+\\.", "").replace("Panel", ""), this, panel, tabs);
 		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		
 		pane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabs, ((JButab) tabs.getComponent(0)).panel);
 		pane.setDividerLocation(getHeight()/20);

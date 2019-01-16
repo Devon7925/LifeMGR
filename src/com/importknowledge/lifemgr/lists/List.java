@@ -68,20 +68,14 @@ public class List extends AbsList{
     }
     public void setpersistant(){
         persistant = true;
-        if(holder != null)((List) holder).setpersistant();
-    }
-    public int level(){
-        return holder == null?0:(((List) holder).level()+1);
+        if(holder != null) ((List) holder).setpersistant();
     }
     public AbsList get(AbsList l1){
-        if(l1.id == id){
+        if(l1.equals(this)){
             return this;
         }else {
             return items.stream().map(n -> n.get(l1)).filter(n -> n != null).findAny().orElse(null);
         }
-    }
-    public AbsList get(int index){
-        return items.get(index);
     }
     public AbsList getFromID(int id){
         if(this.id == id) return this;
@@ -107,35 +101,9 @@ public class List extends AbsList{
         List l = new List("", this);
         add(l);
     }
-    public boolean addTo(AbsList l1, AbsList l2){
-        if(this == l1){
-            add(l2);
-            l2.holder = this;
-            return true;
-        }else {
-            return items.stream().anyMatch(n -> n.addTo(l1, l2));
-        }
-    }
-    public boolean addTo(AbsList l1, int i, AbsList l2){
-        if(this == l1){
-            add(i, l2);
-            l2.holder = this;
-            return true;
-        }else {
-            return items.stream().anyMatch(n -> n.addTo(l1, i, l2));
-        }
-    }
     public void remove(AbsList e) {
         items.remove(e);
         update();
-    }
-    public boolean remFrom(AbsList l1, AbsList l2){
-        if(items.contains(l1)){
-            get(items.indexOf(l1)).remove(l2);
-            return true;
-        }else {
-            return items.stream().anyMatch(n -> n.remFrom(l1, l2));
-        }
     }
     public AbsList getFirst() {
         if(items.size() > 0){

@@ -5,12 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
-import com.importknowledge.lifemgr.lists.*;
+
+import com.importknowledge.lifemgr.lists.List;
+import com.importknowledge.lifemgr.lists.QuickList;
+import com.importknowledge.lifemgr.rendering.Main;
 
 public class QuickPanel extends ListPanelType {
 	private static final long serialVersionUID = 1L;
-	public QuickPanel(List list, JFrame frame){
-		super(list, frame);
+	public QuickPanel(List list, JFrame frame, String path){
+		super(list, frame, path);
 	}
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -32,6 +35,7 @@ public class QuickPanel extends ListPanelType {
 			((QuickList) list).skip();
 		}
 		repaint();
+		Main.serializeAddress(list.correct(), path);
 	}
 	@Override
 	public void update() {
