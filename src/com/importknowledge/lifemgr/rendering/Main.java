@@ -118,7 +118,6 @@ public class Main extends JFrame implements ActionListener{
 		bottom.grabFocus();
 		bottom.tab.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
 		bottom.update(list);
-		bottom.update();
 	}
 	public List deserialzeAddress(String filename) {
 		List address = null;

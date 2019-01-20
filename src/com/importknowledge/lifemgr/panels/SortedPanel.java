@@ -32,7 +32,11 @@ public class SortedPanel extends ListPanel implements MouseInputListener, MouseW
 	}
 	@Override
 	public void update() {
-		list = new OrderedList(list.correct().prioitysort(), list.correct());
 		super.update();
+	}
+	public void update(List l){
+		list = new ListInstance(l, l);
+		list = new OrderedList(list.correct().prioitysort(), list.correct());
+		update();
 	}
 }
