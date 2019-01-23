@@ -60,10 +60,11 @@ public class List extends AbsList{
         update();
     }
     public void clear(){
-        items.forEach(n->n.clear());
         if(progress == 1){
-            if(persistant) progress = 0;
-            else ((List) holder).remove(this);
+            if(persistant) check(false);
+            else holder.remove(this);
+        }else{
+            items.forEach(n->n.clear());
         }
     }
     public void setpersistant(){

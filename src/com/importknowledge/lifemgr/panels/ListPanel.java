@@ -156,7 +156,8 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 		List foc = focuus.correct();
 		int key = e.getKeyCode();
 		if(key == KeyEvent.VK_F1){
-			list.correct().clear();
+			list.clear();
+			update(list.correct());
 		}else if(key == KeyEvent.VK_F2){
 			if(!foc.persistant){
 				foc.setpersistant();

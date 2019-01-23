@@ -79,7 +79,12 @@ public class ListInstance extends AbsList{
     @Override
 	public
     void clear() {
-        correct().clear();
+        if(correct().progress == 1){
+            if(correct().persistant) check(false);
+            else ((ListInstance) holder).correct().remove(correct());
+        }else{
+            items.forEach(n->n.clear());
+        }
     }
 
     @Override
