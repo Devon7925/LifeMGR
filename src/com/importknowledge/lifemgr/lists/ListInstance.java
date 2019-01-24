@@ -1,10 +1,7 @@
 package com.importknowledge.lifemgr.lists;
 
-import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
-import com.importknowledge.lifemgr.util.Settings;
 
 public class ListInstance extends AbsList{
     private static final long serialVersionUID = 1L;
@@ -40,20 +37,6 @@ public class ListInstance extends AbsList{
 
     public ListInstance(ListInstance list) {
         super(list);
-    }
-
-    public void set(Graphics2D g2, int x, int y, List l) {
-        int index = Math.floorDiv(y, l.name.lineheight(g2)+Settings.line);
-        index = index(index);
-        if(index < 0){
-            return;
-        }else if(index == 0){
-            if(holder.items.indexOf(this) != -1) holder.items.set(holder.items.indexOf(this), l);
-        }else if(index > items.size()){
-            return;
-        }else{
-            ((ListInstance) get(--index)).set(g2, x-Settings.indent, (y-(countit(index))*(l.name.lineheight(g2)+Settings.line)), l);
-        }
     }
 
     public int index(int index2){

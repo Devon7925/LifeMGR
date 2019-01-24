@@ -75,6 +75,21 @@ public class OrderedList extends ListInstance{
         return i;
     }
     
+
+    public void set(Graphics2D g2, int x, int y, List l) {
+        int index = Math.floorDiv(y, l.name.lineheight(g2)+Settings.line);
+        index = index(index);
+        if(index < 0){
+            return;
+        }else if(index == 0){
+            if(holder.items.indexOf(this) != -1) holder.items.set(holder.items.indexOf(this), l);
+        }else if(index > items.size()){
+            return;
+        }else{
+            ((OrderedList) get(--index)).set(g2, x-Settings.indent, (y-(countit(index))*(l.name.lineheight(g2)+Settings.line)), l);
+        }
+    }
+    
     public void drawThis(Graphics2D g2, int indent, Point loc, List hovered) {
         g2.translate(loc.x+Settings.indent*indent, loc.y);
         int x = 0;
@@ -91,7 +106,7 @@ public class OrderedList extends ListInstance{
         x += name.lineheight(g2)+Settings.linespace;
         g2.setColor(Color.BLACK);
         Font font = g2.getFont();
-        if(correct.progress == 1 || pseudo) g2.setColor(Color.GRAY);
+        if(correct.progress == 1 || pseudo || (items.size() == 0 && correct().items.size() > 0)) g2.setColor(Color.GRAY);
         if(correct.progress == 1){
             Hashtable<TextAttribute, Object> attributes = new Hashtable<TextAttribute, Object>();
             attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
