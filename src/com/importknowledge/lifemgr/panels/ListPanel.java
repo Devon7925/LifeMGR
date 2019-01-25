@@ -222,9 +222,8 @@ public class ListPanel extends ListPanelType implements MouseInputListener, Mous
 				focuus.cursor--;
 			}else if(key == KeyEvent.VK_ENTER && foc.holder != null){
 				List l = new List("", (List) foc.holder);
-				((List) foc.holder).add(foc.holder.items.indexOf(foc)+1, l);
+				focuus.holder.add(focuus.holder.items.indexOf(focuus)+1, l);
 				scroll -= foc.name.lineheight(g2)+Settings.line;
-				update(list.correct());
 				((OrderedList) ((List) foc.holder).instance(list)).setfocus((OrderedList) l.instance(list));
 			}else if(key == KeyEvent.VK_BACK_SPACE && focuus.cursor != 0){
 				foc.name.setValue(foc.name.getValue().substring(0, focuus.cursor-1)+foc.name.getValue().substring(focuus.cursor, foc.name.getValue().length()));
