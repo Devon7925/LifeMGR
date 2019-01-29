@@ -25,11 +25,15 @@ public class StatsList extends ListInstance{
     public void draw(Graphics2D g2, int w, int h){
         int index = 0;
         for(int i = 1; i <= 10; i++){
-            if(correct().find(i).size() != 0){
+            if(correct().find(i, true).size() != 0){
                 g2.setColor(Color.BLUE);
                 g2.fillOval(index%3*w/3, index/3*h/3, w/3, h/3);
                 g2.setColor(Color.GREEN);
-                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (-360*correct().find(i).stream().filter(n -> n.items.size() > 0 || orig.getFromID(n.id).items.size() == 0).peek(n->n.update()).collect(Collectors.averagingDouble(n->n.progress))));
+                g2.fillArc(index%3*w/3, index/3*h/3, w/3, h/3, 90, (int) (
+                    -360*correct().find(i, true).stream()
+                        .peek(n->n.update())
+                        .collect(Collectors.averagingDouble(n->n.progress))
+                ));
                 Font f = g2.getFont();
                 g2.setFont(new Font("Ubuntu", Font.PLAIN, 150));
                 g2.setColor(Color.BLACK);

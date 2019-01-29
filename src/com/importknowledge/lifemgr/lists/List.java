@@ -138,18 +138,18 @@ public class List extends AbsList{
         importance = prioty;
         items.forEach(n->((List) n).setpriority(prioty));
     }
-    public ArrayList<List> find(int prioty){
+    public ArrayList<List> find(int prioty, boolean remove){
         List list = new List(this);
         return (ArrayList<List>) Stream.concat(
-            list.items.stream().map(n -> (List) n).filter(n -> n.importance == prioty).map(n->{n.items = new ArrayList<>(n.find(prioty)); return n;}),
-            list.items.stream().map(n -> (List) n).filter(n -> n.importance != prioty).filter(e -> e.find(prioty).size() != 0).map(n->{n.items = new ArrayList<>(n.find(prioty)); n.pseudo = true; return n;})
+            list.items.stream().map(n -> (List) n).filter(n -> n.importance == prioty).filter(n -> !remove || (n.items.size() == 0 || n.find(prioty, remove).size() > 0)).map(n->{n.items = new ArrayList<>(n.find(prioty, remove)); return n;}),
+            list.items.stream().map(n -> (List) n).filter(n -> n.importance != prioty).filter(e -> e.find(prioty, remove).size() != 0).map(n->{n.items = new ArrayList<>(n.find(prioty, remove)); n.pseudo = true; return n;})
         ).collect(Collectors.toList());
     }
     public ListInstance prioitysort(){
         List l = new List(this);
         l.items = new ArrayList<>();
         for(int i = 1; i <= 10; i++){
-            l.addAll(new ArrayList<>(this.find(i)));
+            l.addAll(new ArrayList<>(this.find(i, false)));
         }
         return new ListInstance(l, this).unorder();
     }
