@@ -20,8 +20,8 @@ public class QuickList extends ListInstance implements Runnable{
 
 
     public QuickList(AbsList list, List orig, QuickPanel panel) {
-        super(list, orig);
-        items = new ArrayList<>(items.stream().map(n -> n instanceof List?new ListInstance((List) n, this):n).collect(Collectors.toList()));
+        super(orig, orig);
+		items = new ArrayList<>(list.items.stream().map(n -> n instanceof List?new ListInstance((List) n, this):new ListInstance(n, this)).collect(Collectors.toList()));
         this.panel = panel;
     }
 
@@ -37,7 +37,7 @@ public class QuickList extends ListInstance implements Runnable{
     public void draw(Graphics2D g2, int w, int h){
 		Drawer d = new Drawer(new Rectangle2D.Double(0, 0, w, h), g2);
 		d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-		render(   active, d, 1.5, ((List) oldactive.holder).progress);
+		render(   active, d, 1.5, ((List) active.holder).progress);
 		render(oldactive, d, 0.5, oldprogress+(((List) oldactive.holder).progress-oldprogress)*anim);
 	}
 	
@@ -86,8 +86,7 @@ public class QuickList extends ListInstance implements Runnable{
         new Thread(this).start();
         oldactive = active;
         do{
-            if(active != null) active = 
-                    (List) active.next();
+            if(active != null) active = (List) ((ListInstance) active.instance((ListInstance) top()).next()).correct();
             else active = correct();
         }while(active.getFirst() == null);
         if(active != null) active = (List) active.getFirst();

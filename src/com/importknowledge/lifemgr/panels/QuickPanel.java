@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 
 import com.importknowledge.lifemgr.lists.List;
+import com.importknowledge.lifemgr.lists.ListInstance;
 import com.importknowledge.lifemgr.lists.QuickList;
 import com.importknowledge.lifemgr.rendering.Main;
 
@@ -39,11 +40,11 @@ public class QuickPanel extends ListPanelType {
 	}
 	@Override
 	public void update() {
-		list = new QuickList(list.correct().prioitysort(), list.correct(), this);
+		list = new QuickList(list.correct().prioitysort(true), list.correct(), this);
 		super.update();
 	}
 	public void update(List l){
-		list = new QuickList(l, l, this);
+		list = new ListInstance(l, l);
 		update();
 	}
 }

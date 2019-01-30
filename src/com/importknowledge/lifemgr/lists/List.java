@@ -145,11 +145,11 @@ public class List extends AbsList{
             list.items.stream().map(n -> (List) n).filter(n -> n.importance != prioty).filter(e -> e.find(prioty, remove).size() != 0).map(n->{n.items = new ArrayList<>(n.find(prioty, remove)); n.pseudo = true; return n;})
         ).collect(Collectors.toList());
     }
-    public ListInstance prioitysort(){
+    public ListInstance prioitysort(boolean remove){
         List l = new List(this);
         l.items = new ArrayList<>();
         for(int i = 1; i <= 10; i++){
-            l.addAll(new ArrayList<>(this.find(i, false)));
+            l.addAll(new ArrayList<>(this.find(i, remove)));
         }
         return new ListInstance(l, this).unorder();
     }

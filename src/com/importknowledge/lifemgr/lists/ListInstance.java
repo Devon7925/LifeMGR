@@ -19,6 +19,7 @@ public class ListInstance extends AbsList{
         items = new ArrayList<>(list.items.size());
         list.items.stream().map(n -> new ListInstance((List) n, orig)).forEach(items::add);
         this.orig = orig;
+        if(list.holder != null) holder = top().getFromID(list.holder.id);
     }
 
     public  ListInstance(AbsList list) {
@@ -33,6 +34,13 @@ public class ListInstance extends AbsList{
     public ListInstance(AbsList list, ListInstance holder) {
         this(list, holder.correct());
         this.holder = holder;
+        items = new ArrayList<>(list.items.stream().map(n->new ListInstance(n, this)).collect(Collectors.toList()));
+    }
+
+    public ListInstance(List list, ListInstance holder) {
+        this((AbsList) list, holder);
+        this.holder = holder;
+        items = new ArrayList<>(list.items.stream().map(n->new ListInstance((List) n, this)).collect(Collectors.toList()));
     }
 
     public ListInstance(ListInstance list) {
