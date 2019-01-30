@@ -37,8 +37,9 @@ public class QuickList extends ListInstance implements Runnable{
     public void draw(Graphics2D g2, int w, int h){
 		Drawer d = new Drawer(new Rectangle2D.Double(0, 0, w, h), g2);
 		d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-		render(   active, d, 1.5, ((List) active.holder).progress);
-		render(oldactive, d, 0.5, oldprogress+(((List) oldactive.holder).progress-oldprogress)*anim);
+		if(active != null && active.holder != null)
+			render(   active, d, 1.5, ((List) active.holder).progress);
+		if(oldactive != null) render(oldactive, d, 0.5, oldprogress+(((List) oldactive.holder).progress-oldprogress)*anim);
 	}
 	
 	void render(List todraw, Drawer d, double shift, double val){
@@ -85,11 +86,12 @@ public class QuickList extends ListInstance implements Runnable{
         update();
         new Thread(this).start();
         oldactive = active;
+		ListInstance temp = active.instance((ListInstance) top());
         do{
-            if(active != null) active = (List) ((ListInstance) active.instance((ListInstance) top()).next()).correct();
-            else active = correct();
-        }while(active.getFirst() == null);
-        if(active != null) active = (List) active.getFirst();
+            if(temp != null) temp = (ListInstance) temp.next();
+		}while(temp.getFirst() == null);
+		temp = (ListInstance) temp.getFirst();
+		active = temp == null?correct():temp.correct();
     }
 
 	@Override

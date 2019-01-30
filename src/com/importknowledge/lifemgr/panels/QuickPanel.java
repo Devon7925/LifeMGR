@@ -20,7 +20,7 @@ public class QuickPanel extends ListPanelType {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		((QuickList) list).draw(g2, getWidth(), getHeight());
+		if(list instanceof QuickList) ((QuickList) list).draw(g2, getWidth(), getHeight());
 	}
 	
 	public void keyTyped(KeyEvent e) {}
