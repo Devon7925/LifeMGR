@@ -1,6 +1,5 @@
 package com.importknowledge.lifemgr.rendering;
 
-import java.awt.Color;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
@@ -8,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import com.importknowledge.lifemgr.panels.ListPanelType;
+import com.importknowledge.lifemgr.util.Settings;
 
 class JButab extends JButton{
 
@@ -21,8 +21,7 @@ class JButab extends JButton{
         this.panel = panel;
         panel.tab = this;
         addActionListener(a);
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, Color.BLACK));
-        setBackground(new Color(240, 240, 240));
+        setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, Settings.tabBorder));
+        setBackground(Settings.tabBackground);
     }
 } 

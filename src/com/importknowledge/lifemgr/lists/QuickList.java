@@ -1,13 +1,13 @@
 package com.importknowledge.lifemgr.lists;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import com.importknowledge.lifemgr.panels.*;
-import com.importknowledge.lifemgr.rendering.*;
+
+import com.importknowledge.lifemgr.panels.QuickPanel;
+import com.importknowledge.lifemgr.rendering.Drawer;
+import com.importknowledge.lifemgr.util.Settings;
 
 public class QuickList extends ListInstance implements Runnable{
 
@@ -36,35 +36,44 @@ public class QuickList extends ListInstance implements Runnable{
 
     public void draw(Graphics2D g2, int w, int h){
 		Drawer d = new Drawer(new Rectangle2D.Double(0, 0, w, h), g2);
-		d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+		d.setFont(Settings.font.deriveFont(50f));
 		if(active != null && active.holder != null)
-			render(   active, d, 1.5, ((List) active.holder).progress);
+			render(active, d, 1.5, ((List) active.holder).progress);
 		if(oldactive != null) render(oldactive, d, 0.5, oldprogress+(((List) oldactive.holder).progress-oldprogress)*anim);
 	}
 	
 	void render(List todraw, Drawer d, double shift, double val){
 		if(todraw != null) {
 			double len = todraw.name.getValue().length()*0.01;
-			d.setColor(new Color(100, 100, 255));
+
+			d.setColor(Settings.incomplete);
 			d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.5, 0.5+len, 0.5));
-			d.setColor(Color.green);
-			if(todraw.progress > 0.5) d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.5, 1.2*anim*0.5, 1.2*anim*0.5));
-			d.setColor(Color.white);
+
+			d.setColor(Settings.complete);
+			if(todraw.progress > 0.5) d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.5, anim*(0.5+len), anim*0.5));
+
+			d.setColor(Settings.persistant);
 			if(todraw.persistant) d.drawEllipCent(new Rectangle2D.Double(shift-anim, 0.35, 0.05, 0.05));
-			d.setColor(Color.black);
+
+			d.setColor(Settings.text);
 			d.drawString(todraw.name.getValue(), shift-anim, 0.5);
+
 			if(todraw.holder != null){
-				d.setFont(new Font("TimesRoman", Font.PLAIN, 25));
+				d.setFont(Settings.font.deriveFont(25f));
 				double x = (oldactive.holder == active.holder)?0.5:shift-anim;
 				List hold = (List) todraw.holder;
 				len = hold.name.getValue().length()*0.01;
-				d.setColor(new Color(100, 100, 255));
+
+				d.setColor(Settings.incomplete);
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, 0.25+len, 0.1));
-				d.setColor(Color.GREEN);
+
+				d.setColor(Settings.complete);
 				d.drawEllipCent(new Rectangle2D.Double(x, 0.15, val*(0.25+len), val*0.1));
-				d.setColor(Color.black);
+
+				d.setColor(Settings.text);
 				d.drawString(hold.name.getValue(), x, 0.15);
-				d.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+
+				d.setFont(Settings.font.deriveFont(50f));
 			}
 		}
 	}
@@ -98,7 +107,7 @@ public class QuickList extends ListInstance implements Runnable{
 	public void run() {
 		anim = 0;
 		while(anim < 1){
-			anim += 0.04;
+			anim += Settings.quickAnimSpeed;
 			panel.repaint();
 			try {
 				Thread.sleep(10);

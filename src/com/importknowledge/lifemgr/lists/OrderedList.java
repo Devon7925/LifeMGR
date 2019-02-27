@@ -1,14 +1,13 @@
 package com.importknowledge.lifemgr.lists;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.font.TextAttribute;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.stream.Collectors;
-import com.importknowledge.lifemgr.util.*;
+
+import com.importknowledge.lifemgr.util.MutableString;
+import com.importknowledge.lifemgr.util.Settings;
 
 public class OrderedList extends ListInstance{
 
@@ -20,7 +19,7 @@ public class OrderedList extends ListInstance{
         super(list, orig);
         items = new ArrayList<>(list.items.size());
         list.items.stream().map(n -> new OrderedList(n, this)).forEach(items::add);
-        if(items.size()*correct().level() >= 7) collapsed = true;
+        if(items.size()*correct().level() >= Settings.foldLimit) collapsed = true;
     }
 
     public OrderedList(AbsList list, OrderedList holder) {
@@ -56,15 +55,20 @@ public class OrderedList extends ListInstance{
             holder != null && priorityLines && holder.getNext(this) != top() &&
             ((ListInstance) visnext().child()).correct().importance != ((ListInstance) child()).correct().importance
         ){
-            g2.setColor(new Color(225, 150, 225));
-            g2.drawLine((int) loc.getX()+indent*Settings.indent, (int) loc.getY()+(correct().name.lineheight(g2)+Settings.line/2), (int) loc.getX()+200+indent*Settings.indent, (int) loc.getY()+(correct().name.lineheight(g2)+Settings.line/2));
+            g2.setColor(Settings.priorityLines);
+            int xLoc = (int) loc.getX()+indent*Settings.indent;
+            int yLoc = (int) loc.getY()+(correct().name.lineheight(g2)+Settings.line/2);
+            g2.drawLine(
+                xLoc, yLoc,
+                Settings.priorityLineLength+xLoc, yLoc
+            );
         }
         if(!collapsed) for(AbsList e : items){
                 i += ((OrderedList) e).draw(g2, indent+1, new Point(loc.x, loc.y+(((OrderedList) e).correct().name.lineheight(g2)+Settings.line)*i), hovered, priorityLines);
         }
-        g2.setColor(Color.lightGray);
+        g2.setColor(Settings.clarifyLine);
         if(correct().items.size() > 0){//draw clarifying lines
-            if(cursor >= 0) g2.setColor(new Color(140, 140, 140));
+            if(cursor >= 0) g2.setColor(Settings.selectedClarifyLine);
             int x = Settings.indent*indent+loc.x+((List) correct().top().getFromID(id)).name.lineheight(g2)/4;
             int y = loc.y+correct().name.lineheight(g2);
             g2.drawLine(
@@ -95,26 +99,27 @@ public class OrderedList extends ListInstance{
         int x = 0;
         List correct = correct();
         MutableString name = correct.name;
-        g2.setColor(Color.BLUE);
+        g2.setColor(Settings.incomplete);
         g2.fillOval(0, 0, name.lineheight(g2), name.lineheight(g2));
-        g2.setColor(Color.GREEN);
-        g2.fillArc(0, 0, (int) (1.1*name.lineheight(g2)), (int) (1.1*name.lineheight(g2)), 90, (int) (-360*correct.progress));
-        g2.setColor(Color.WHITE);
+        g2.setColor(Settings.complete);
+        g2.fillArc(0, 0, name.lineheight(g2), name.lineheight(g2), 90, (int) (-360*correct.progress));
+        g2.setColor(Settings.persistant);
         if(correct.persistant)
-            g2.fillOval(5*name.lineheight(g2)/12, 5*name.lineheight(g2)/12, name.lineheight(g2)/3, name.lineheight(g2)/3);
+            g2.fillOval(
+                (int) (name.lineheight(g2)*(1-Settings.persistantSize)/2), 
+                (int) (name.lineheight(g2)*(1-Settings.persistantSize)/2), 
+                (int) (name.lineheight(g2)*Settings.persistantSize),
+                (int) (name.lineheight(g2)*Settings.persistantSize)
+            );
 
         x += name.lineheight(g2)+Settings.linespace;
-        g2.setColor(Color.BLACK);
+        g2.setColor(Settings.text);
         Font font = g2.getFont();
-        if(correct.progress == 1 || pseudo || (items.size() == 0 && correct().items.size() > 0)) g2.setColor(Color.GRAY);
-        if(correct.progress == 1){
-            Hashtable<TextAttribute, Object> attributes = new Hashtable<TextAttribute, Object>();
-            attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-            g2.setFont(font.deriveFont(attributes)); 
-        }
+        if(correct.progress == 1 || pseudo || (items.size() == 0 && correct().items.size() > 0)) g2.setColor(Settings.disabledtext);
+        if(correct.progress == 1) g2.setFont(Settings.donefont.deriveFont((float) Settings.fontsize));
         g2.drawString(name.getValue(), x, name.lineheight(g2));
         if(cursor >= 0){
-            g2.setColor(Color.BLUE);
+            g2.setColor(Settings.selectedtext);
             var nameToCursor = new MutableString(name.getValue().substring(0, cursor));
             g2.drawLine(x+nameToCursor.linewidth(g2), 0, x+nameToCursor.linewidth(g2), name.lineheight(g2));
         }
@@ -122,25 +127,25 @@ public class OrderedList extends ListInstance{
         g2.setFont(font);
         if(correct.equals(hovered) || cursor >= 0){
             x += Settings.linespace+Math.max(name.linewidth(g2), Settings.buttondist);
-            g2.setColor(Color.RED);
+            g2.setColor(Settings.xColor);
             g2.fillOval(x, 0, (int) name.lineheight(g2), (int) name.lineheight(g2));
 
             x += name.lineheight(g2)/5;
-            g2.setColor(Color.BLACK);
+            g2.setColor(Settings.buttonForeground);
             g2.drawLine(x, name.lineheight(g2)*4/5, (int) (name.lineheight(g2)*3/5+x), name.lineheight(g2)/5);
             g2.drawLine(x, name.lineheight(g2)/5, (int) (name.lineheight(g2)*3/5+x), name.lineheight(g2)*4/5);
 
             x += name.lineheight(g2);
-            g2.setColor(Color.GREEN);
+            g2.setColor(Settings.addColor);
             g2.fillOval(x, 0, (int) name.lineheight(g2), (int) name.lineheight(g2));
 
             x += name.lineheight(g2)/5;
-            g2.setColor(Color.BLACK);
+            g2.setColor(Settings.buttonForeground);
             g2.drawLine(x, name.lineheight(g2)/2, (int) (name.lineheight(g2)*3/5+x), name.lineheight(g2)/2);
             g2.drawLine((int) (name.lineheight(g2)*3/10+x), name.lineheight(g2)/5, (int) (name.lineheight(g2)*3/10+x), name.lineheight(g2)*4/5);
 
             x += name.lineheight(g2);
-            g2.setColor(Color.GRAY);
+            g2.setColor(Settings.disabledtext);
             g2.drawString(correct.importance+"", x, name.lineheight(g2));
         }
         g2.translate(-loc.x-Settings.indent*indent, -loc.y);
