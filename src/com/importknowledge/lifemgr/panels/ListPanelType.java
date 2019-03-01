@@ -1,6 +1,5 @@
 package com.importknowledge.lifemgr.panels;
 
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -10,6 +9,7 @@ import javax.swing.JPanel;
 
 import com.importknowledge.lifemgr.lists.List;
 import com.importknowledge.lifemgr.lists.ListInstance;
+import com.importknowledge.lifemgr.util.Settings;
 
 abstract public class ListPanelType extends JPanel implements KeyListener{
 	private static final long serialVersionUID = 1L;
@@ -20,7 +20,7 @@ abstract public class ListPanelType extends JPanel implements KeyListener{
 	ListPanelType(List list, JFrame frame, String path){
 		update(list);
 		frame.addKeyListener(this);
-		setBackground(Color.WHITE);
+		setBackground(Settings.backgroundColor);
 		setFocusTraversalKeysEnabled(false);
 		addKeyListener(this);
 		this.path = path;

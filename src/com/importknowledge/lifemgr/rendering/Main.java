@@ -40,7 +40,7 @@ public class Main extends JFrame implements ActionListener{
 		Settings.read();
 		if(new File(Settings.inpath).exists()) list = deserialzeAddress(Settings.inpath);
 		setLocation(20, 20);
-		setSize(700, 1200);
+		setSize(Settings.width, Settings.height);
 		setTitle("LifeMGR");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		tabs = new JPanel();
