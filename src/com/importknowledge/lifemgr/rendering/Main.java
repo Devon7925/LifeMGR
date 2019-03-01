@@ -14,14 +14,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-
 import com.importknowledge.lifemgr.lists.List;
 import com.importknowledge.lifemgr.panels.ListPanel;
 import com.importknowledge.lifemgr.panels.ListPanelType;
@@ -39,7 +37,7 @@ public class Main extends JFrame implements ActionListener{
 	static JPanel tabs;
 
 	public Main() {
-		list = new List("ToDo", null);
+		Settings.read();
 		if(new File(Settings.inpath).exists()) list = deserialzeAddress(Settings.inpath);
 		setLocation(20, 20);
 		setSize(700, 1200);
@@ -47,12 +45,12 @@ public class Main extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		tabs = new JPanel();
 		tabs.setMinimumSize(new Dimension(0, getHeight()/20));
-		ArrayList<ListPanelType> panels = new ArrayList<>(Arrays.asList(
+		java.util.List<ListPanelType> panels = Arrays.asList(
 			new   ListPanel(list, this, Settings.outpath),
 			new  QuickPanel(list, this, Settings.outpath),
 			new SortedPanel(list, this, Settings.outpath),
 			new  StatsPanel(list, this, Settings.outpath)
-		));
+		);
 		for(ListPanelType panel : panels)
 			new JButab(panel.getClass().getName().replaceAll(".+\\.", "").replace("Panel", ""), this, panel, tabs);
 		tabs.setLayout(new GridLayout(1, tabs.getComponentCount()));		

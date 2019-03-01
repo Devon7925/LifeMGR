@@ -33,35 +33,23 @@ public abstract class AbsList implements Serializable {
     abstract AbsList getFirst();
     abstract AbsList getNext(AbsList l);
     public AbsList child(){
-        if(items.size() > 0){
-            return items.get(0).child();
-        }else{
-            return this;
-        }
+        if(items.size() > 0) return items.get(0).child();
+        else return this;
     }
     public AbsList next(){
-        if(items.size() > 0){
-            return get(0);
-        }else{
-            return upnext();
-        }
+        return items.size() > 0?get(0):upnext();
+        
     }
     public AbsList upnext(){
         if(holder != null){
-            if(holder.items.indexOf(this) < holder.items.size()-1){
-                return holder.get(holder.items.indexOf(this)+1);
-            }else{
-                return holder.upnext();
-            }
-        }else{
-            return getFirst();
-        }
+            if(holder.items.indexOf(this) < holder.items.size()-1) return holder.get(holder.items.indexOf(this)+1);
+            else return holder.upnext();
+        }else return getFirst();
     }
     abstract boolean set(AbsList l1, AbsList l2);
     abstract void update();
     public AbsList top(){
-        if(holder == null)return this;
-        return holder.top();
+        return holder == null?this:holder.top();
     }
     public int countit() {
         return items.stream().collect(Collectors.summingInt(n -> n.countit()))+1;
