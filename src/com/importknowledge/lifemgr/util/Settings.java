@@ -43,9 +43,9 @@ public class Settings {
             width = 700,
             height = 1000;
     public static double 
-        scroll = 7.5,
-        persistantSize = 1 / 3.0,
-        quickAnimSpeed = 0.04;
+            scroll = 7.5,
+            persistantSize = 1 / 3.0,
+            quickAnimSpeed = 0.04;
     public static Color 
             priorityLines = new Color(225, 150, 225),
             clarifyLine = Color.LIGHT_GRAY,

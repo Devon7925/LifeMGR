@@ -154,48 +154,42 @@ public class OrderedList extends ListInstance{
     public void click(Graphics2D g2, int x) {
         List correct = correct();
         MutableString name = correct.name;
-        x -= Settings.indent*correct.level();
+        x -= Settings.indent*(correct.level()+1);
         int x1 = 0;
         if(x < x1){//left out of bounds
-            if(top() == null){
-                resetfocus();
-            }else{
-                ((OrderedList) top()).resetfocus();
-            }
+            if(top() == null) resetfocus();
+            else ((OrderedList) top()).resetfocus();
             return;
         }
-        x1 += name.lineheight(g2)+2*Settings.linespace;
+        x1 += name.lineheight(g2)+Settings.linespace;
         if(x < x1) {//check space
             check(correct.progress < 1);
             ((OrderedList) top()).setfocus(this);
             return;
         }
-        x1 += name.lineheight(g2)/5+Settings.linespace+Math.max(name.linewidth(g2), Settings.buttondist);
+        x1 += Settings.linespace+Math.max(name.linewidth(g2), Settings.buttondist);
         if(x < x1) {//text
             if(cursor >= 0) {
                 collapsed = !collapsed;
-                if(items.size() == 0){
-                    collapsed = false;
-                }
+                if(items.size() == 0) collapsed = false;
             }
             ((OrderedList) top()).setfocus(this);
             return;
         }
-        x1 += name.lineheight(g2)*6/5;
+        x1 += name.lineheight(g2);
         if(x < x1){//remove
             holder.remove(this);
             return;
         }
-        x1 += name.lineheight(g2)*6/5;
+        x1 += name.lineheight(g2)/5;
+        if(x < x1) return;
+        x1 += name.lineheight(g2);
         if(x < x1){//add sub
             add(new List("", correct()));
             return;
         }else{//right out of bounds
-            if(top() == null){
-                resetfocus();
-            }else {
-                ((OrderedList) top()).resetfocus();
-            }
+            if(top() == null) resetfocus();
+            else ((OrderedList) top()).resetfocus();
             return;
         }
     }
