@@ -12,31 +12,32 @@ import com.importknowledge.lifemgr.lists.*;
 import com.importknowledge.lifemgr.util.*;
 
 public class SortedPanel extends ListPanel implements MouseInputListener, MouseWheelListener {
-	private static final long serialVersionUID = 1L;
-	public SortedPanel(List list, JFrame frame, String path){
-		super(list, frame, path);
-	}
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g2 = (Graphics2D) g;
+    private static final long serialVersionUID = 1L;
+
+    public SortedPanel(List list, JFrame frame, String path) {
+        super(list, frame, path);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(3));
-		g2.setFont(Settings.font.deriveFont((float) Settings.fontsize));
+        g2.setFont(Settings.font.deriveFont((float) Settings.fontsize));
         g2.translate(0, scroll);
-		((OrderedList) list).draw(g2, 0,
-			new Point(Settings.indent, Settings.indent),
-			((OrderedList) list).hover(g2, lastpos.x, lastpos.y-(int) scroll),
-			true
-		);
+        ((OrderedList) list).draw(g2, 0, new Point(Settings.indent, Settings.indent),
+                ((OrderedList) list).hover(g2, lastpos.x, lastpos.y - (int) scroll), true);
         g2.translate(0, -scroll);
-	}
-	@Override
-	public void update() {
-		super.update();
-	}
-	public void update(List l){
-		list = new ListInstance(l, l);
-		list = new OrderedList(list.correct().prioitysort(false), list.correct());
-		update();
-	}
+    }
+
+    @Override
+    public void update() {
+        super.update();
+    }
+
+    public void update(List l) {
+        list = new ListInstance(l, l);
+        list = new OrderedList(list.correct().prioitysort(false), list.correct());
+        update();
+    }
 }

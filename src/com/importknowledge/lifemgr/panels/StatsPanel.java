@@ -11,8 +11,8 @@ public class StatsPanel extends ListPanelType {
 
     private static final long serialVersionUID = 1L;
 
-    public StatsPanel(List list, JFrame frame, String path){
-		  super(list, frame, path);
+    public StatsPanel(List list, JFrame frame, String path) {
+        super(list, frame, path);
     }
 
     @Override
@@ -23,17 +23,20 @@ public class StatsPanel extends ListPanelType {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
-    public void keyPressed(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
+    }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
-    
-	public void update(List l){
-		list = new StatsList(l, l);
-		update();
-	}
+    public void keyReleased(KeyEvent e) {
+    }
+
+    public void update(List l) {
+        list = new StatsList(l, l);
+        update();
+    }
 
 }
